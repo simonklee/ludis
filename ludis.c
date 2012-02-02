@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#define STATUS_OK  0
-#define STATUS_ERR 1
+#define LUDIS_OK  0
+#define LUDIS_ERR -1
 
 unsigned char OK    = 1; 
 unsigned char ERR   = 2; 
@@ -16,7 +16,11 @@ void bin(short d) {
             printf("1");
         else printf("0");
     }
-    printf("\n");
+}
+
+void proto(short d) {
+    bin(d);
+    printf(" %X %d %c\n", d, d, d);
 }
 
 int
@@ -27,7 +31,7 @@ read_query(int fd, char *query)
 
     nread = read(fd, buf, 16);
 
-    return STATUS_OK;
+    return LUDIS_OK;
 }
 
 int 
@@ -46,15 +50,22 @@ call(char *bytes)
         return MULTI;
     }
 
-    return STATUS_ERR;
+    return LUDIS_ERR;
 }    
 
 #ifdef TEST
 #include "test.h"
 int main(void) 
 {
-    unsigned char types = 0;
-    types |= OK;
+    proto('+');
+    proto('-');
+    proto(':');
+    proto('$');
+    proto('*');
+    proto('\n');
+    proto('\r');
+    proto('3');
+/*    types |= OK;
     bin(types);
 
     types |= ERR;
@@ -64,7 +75,7 @@ int main(void)
     bin(types);
 
     types &= ~(INT | BULK | MULTI);
-    bin(types);
+    bin(types);*/
     
     return 0;
 }
