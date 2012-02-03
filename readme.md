@@ -55,7 +55,7 @@ Data size varies based on type.
   :  integer.
 
      Variable len string repr an integer, terminated by
-     CRLF. Can be as big as 64-bit signed int.
+     CRLF. 
 
      Integer reply `50` ascii encoded
 
@@ -94,11 +94,11 @@ Data size varies based on type.
         +--------+--------+--------+--------+--------+
         |01100110|01101111|01101111|00001101|00001010|
         +--------+--------+--------+--------+--------+
-                     data                terminator
+                    data                terminator
 
   *  multi-bulk.
 
-     Multiple bulk replies in a single transmition. Type and
+     Multiple bulk replies in a single transmission. Type and
      bulk count, terminated by CRLF, is prepended a single
      time before N replies. Bulk count denotes how many bulk
      reply follow. If bulk count is <= 0 nothing follows.
