@@ -1,6 +1,6 @@
 BIN=ludis
 CFLAGS ?= -pedantic-errors -pipe -Wl,--relax -Wall -Wextra -Wno-variadic-macros -Wno-strict-aliasing -ansi -pedantic -g -DTEST
-CC = musl-gcc 
+CC = gcc 
 
 all: $(BIN)
 

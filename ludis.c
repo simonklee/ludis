@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <syscall.h>
-#include <malloc.h>
 #include <string.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -35,10 +34,32 @@ void proto(short d) {
     printf(" %X %d %c\n", d, d, d);
 }
 
-int 
-call(char *bytes)
+void 
+debug_chr(int c) 
 {
-    switch(bytes[0]) {
+    printf("  %X\t", c);
+    bin(c);
+    printf("    ");
+
+    switch(c) {
+    case 10:
+        printf("LF");
+        break;
+    case 13:
+        printf("CR");
+    default:
+        printf("%c", c);
+    }
+
+    printf("\n");
+}
+
+int 
+query_parse(struct query *q)
+{
+    assert(q->buf);
+
+    switch(q->buf[0]) {
     case '+':
         return OK;
     case '-':
@@ -55,7 +76,7 @@ call(char *bytes)
 }    
 
 struct query *
-new_query(void)
+query_new(void)
 {
     struct query *q;
     
@@ -70,14 +91,14 @@ new_query(void)
 }
 
 void
-free_query(struct query *q)
+query_free(struct query *q)
 {
     free(q->buf);
     free(q);
 }
 
 int
-write_query(struct query *q, const char *filename) 
+query_write(struct query *q, const char *filename) 
 {
     FILE *fp = NULL;
     short nwrite;
@@ -105,7 +126,7 @@ error:
 }
 
 int
-read_query(struct query *q, const char *filename) 
+query_read(struct query *q, const char *filename) 
 {
     FILE *fp = NULL;
     char buf[READ_SIZE];
@@ -147,28 +168,21 @@ int main(void)
 {
     struct query *q;
     int i;
-    q = new_query();
-    /*q->buf[0] = '+';
-    q->buf[1] = 'O';
-    q->buf[2] = 'K';
-    q->buf[3] = '\r';
-    q->buf[4] = '\n';
-    q->len = 5;
 
-    write_query(q, "query.rp");*/
-    if (read_query(q, "query.rp") != LUDIS_OK) {
+    q = query_new();
+
+    if (query_read(q, "query.rp") != LUDIS_OK) {
         fprintf(stderr, "err\n");
         goto error;
     }
     
-    for (i = 0; i < q->len; i++) {
-        printf("%X\n", q->buf[i]);
-    }
+    for (i = 0; i < q->len; i++)
+        debug_chr(q->buf[i]);
     
-    free_query(q);
+    query_free(q);
     return 0;
 error:
-    if (q) free_query(q);
+    if (q) query_free(q);
     return 1;
 }
 #endif
