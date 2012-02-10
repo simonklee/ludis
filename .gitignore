@@ -1,4 +1,6 @@
 *.o
 ludis
+test
+net
 bin/
 usr/

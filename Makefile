@@ -1,15 +1,8 @@
-BIN=ludis
-CFLAGS ?= -pedantic-errors -pipe -Wl,--relax -Wall -Wextra -Wno-variadic-macros -Wno-strict-aliasing -ansi -pedantic -g -DTEST
-CC = gcc 
+BIN=test net
+CFLAGS ?= -pedantic-errors -pipe -Wl,--relax -Wall -Wextra -Wno-variadic-macros -Wno-strict-aliasing -ansi -pedantic -g 
+CC = musl-gcc 
 
 all: $(BIN)
-
-%.o: %.c
-	@echo '		CC $@'
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-%.out: %.o 
-	@$(CC) $(LDFLAGS) $^ -o $@
 
 dep:
 	$(CC) -MM *.c

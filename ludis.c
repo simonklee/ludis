@@ -9,9 +9,9 @@
 #define READ_SIZE 16
 
 struct query {
-    char *buf;
     int   len;
     int   a;
+    char *buf;
 };
 
 unsigned char OK    = 1; 
@@ -162,27 +162,8 @@ error:
     return LUDIS_ERR;
 }
 
-#ifdef TEST
-#include "test.h"
-int main(void) 
+int 
+main(void)
 {
-    struct query *q;
-    int i;
-
-    q = query_new();
-
-    if (query_read(q, "query.rp") != LUDIS_OK) {
-        fprintf(stderr, "err\n");
-        goto error;
-    }
-    
-    for (i = 0; i < q->len; i++)
-        debug_chr(q->buf[i]);
-    
-    query_free(q);
     return 0;
-error:
-    if (q) query_free(q);
-    return 1;
 }
-#endif
