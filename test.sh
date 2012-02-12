@@ -1,1 +1,6 @@
-make clean && make test && ./test
+#!/bin/sh
+
+make clean
+make 
+./ludis-test
+./net-test

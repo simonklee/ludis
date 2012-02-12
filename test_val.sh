@@ -1,1 +1,4 @@
-make clean && make test && valgrind ./test
+make clean
+make 
+valgrind ./ludis-test
+valgrind ./net-test

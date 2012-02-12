@@ -2,7 +2,7 @@ BIN=ludis-test net-test
 CFLAGS ?= -ansi -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
 		  -Wno-variadic-macros -Wno-strict-aliasing
 DEBUG ?= -g -ggdb
-CC = musl-gcc 
+CC = gcc 
 OBJ = ludis.o net.o
 
 SRCCOLOR="\033[34m"
