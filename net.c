@@ -16,6 +16,7 @@
 #include <netinet/in.h> /* sockaddr_in|6 */
 #include <sys/un.h>     /* sockaddr_un */
 
+#include "common.h"
 #include "net.h"
 
 struct net_addr
@@ -65,19 +66,19 @@ net_connect(struct client *c, struct net_addr addr)
     printf("connect ok\n");
     c->fd = fd;
 
-    return 0;
+    return LUDIS_OK;
 error:
-    return 1;
+    return LUDIS_ERR;
 }
 
-int
+/*int
 net_connect_gai(struct client *ctx)
 {
     int s, r;
     struct addrinfo hints;
     struct addrinfo *servinfo, *p;
 
-    memset(&hints, 0, sizeof(struct addrinfo));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -111,4 +112,4 @@ net_connect_gai(struct client *ctx)
 error:
     freeaddrinfo(servinfo);
     return 1;
-}
+}*/
