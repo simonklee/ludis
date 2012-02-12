@@ -1,6 +1,6 @@
 *.o
-ludis
+ludis-test
+net-test
 test
-net
 bin/
 usr/

@@ -1,25 +1,23 @@
-#ifndef __TEST_H
-#define __TEST_H
+#ifndef _TEST_H
+#define _TEST_H
 
-#define NELEMS(x) (int) ((sizeof (x))/(sizeof (x[0])))
-struct test_case {
-    int   cond;
-    char *name;
-};
-int __failed_tests = 0;
-int __test_num = 0;
+#include <stddef.h>
 
-#define test(descr,_c) do { \
-    __test_num++; printf("%d - %s: ", __test_num, descr); \
-    if(_c) printf("PASSED\n"); else {printf("FAILED\n"); __failed_tests++;} \
-} while(0);
+#ifdef __GNUC__
+#define UNUSED __attribute__ ((unused))
+#else
+#define UNUSED 
+#endif
 
-#define test_report() do { \
-    printf("%d tests, %d passed, %d failed\n", __test_num, \
-                    __test_num-__failed_tests, __failed_tests); \
-    if (__failed_tests) { \
-        printf("=== WARNING === We have failed tests here...\n"); \
-    } \
-} while(0);
+UNUSED static char *current_test = NULL;
+
+#define TEST(name)                                                             \
+static void test__##name(void);                                                \
+static void test_##name(void) {                                                \
+    current_test = #name;                                                      \
+    test__##name();                                                            \
+    printf("%s: PASSED\n", current_test);                                      \
+}                                                                              \
+static void test__##name(void)
 
 #endif

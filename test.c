@@ -36,7 +36,7 @@ test_str(void)
     char *s;
 
     s = str_new(16);
-    test("buf->len ", str_len(s) == 16);
+    assert(str_len(s) == 16);
 
     /*m = str_len(s);
     n = buffer_read(b, s);
@@ -54,6 +54,5 @@ int
 main(void) 
 {
     test_str();
-    test_report();
     return 0;
 }

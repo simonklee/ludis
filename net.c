@@ -4,7 +4,6 @@
 #include <string.h>
 #include <errno.h>      
 
-#include <sys/socket.h>
 #include <sys/types.h>
 
 /* inet_pton/inet_ntop */
@@ -13,33 +12,11 @@
 #include <netdb.h>      
 #include <unistd.h>
 
-#include <netinet/in.h>
-#include <sys/un.h>
+#include <sys/socket.h> /* socklen_t */
+#include <netinet/in.h> /* sockaddr_in|6 */
+#include <sys/un.h>     /* sockaddr_un */
 
-#define PORT 6379
-#define MAXDATASIZE 100
-
-enum {
-    NET_CONNECTED
-};
-
-struct net_addr {
-    int sa_family;
-    socklen_t sa_addrlen;
-
-    union {
-        struct sockaddr addr;
-        struct sockaddr_in in;
-        struct sockaddr_in6 in6;
-        struct sockaddr_un un;
-    } sa_addr;
-};
-
-struct client {
-    int fd;
-    int flags;
-    struct net_addr addr;
-};
+#include "net.h"
 
 struct net_addr
 net_addr(struct sockaddr_in sa) 
@@ -87,7 +64,6 @@ net_connect(struct client *c, struct net_addr addr)
 
     printf("connect ok\n");
     c->fd = fd;
-    c->flags |= NET_CONNECTED;
 
     return 0;
 error:
@@ -126,7 +102,6 @@ net_connect_gai(struct client *ctx)
 
         printf("connect ok\n");
         ctx->fd = s;
-        ctx->flags |= NET_CONNECTED;
         break;
     }
 
@@ -135,44 +110,5 @@ net_connect_gai(struct client *ctx)
     return 0;
 error:
     freeaddrinfo(servinfo);
-    return 1;
-}
-
-int 
-main(void) 
-{
-	int nread, i;
-    struct client c;
-	char buf[MAXDATASIZE];
-    /*char *out = "*2\r\n$3\r\nGET\r\n$3\r\nfoo\r\n";*/
-    char *out = "*1\r\n$4\r\nPING\r\n";
-    struct net_addr addr;
-
-    addr = net_addr_in("127.0.0.1", 6379);
-
-    if (net_connect(&c, addr) != 0) {
-        fprintf(stderr, "net_connect err");
-        goto error;
-    }
-
-    /*if (net_connect_gai(&c) != 0) {
-        fprintf(stderr, "net_connect err");
-        goto error;
-    }*/
-
-    for (i = 0; i < 1; i++) {
-        write(c.fd, out, strlen(out));
-        if ((nread=recv(c.fd, buf, MAXDATASIZE, 0)) == -1) { 
-            fprintf(stderr, "recv() error\n");
-            goto error;
-        }
-        buf[nread] = '\0';
-        printf("Server Message: %s", buf);
-    }
-
-	close(c.fd);
-    return 0;
-error:
-    close(c.fd);
     return 1;
 }
