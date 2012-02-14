@@ -1,6 +1,6 @@
 *.o
 ludis-test
 net-test
-test
+str-test
 bin/
 usr/

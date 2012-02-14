@@ -1,58 +1,45 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <malloc.h>
 
 #include "test.h"
-#include "str.c"
 
-/*void
-test_ludis(void) 
+/* Returns a pointer to a char * which has escaped occurences of \r and \n */
+static char *
+escape_crlf(char *s)
 {
-    struct query *q;
-    int i;
+    int c, newlen; 
+    char *p;
+    p = s;
 
-    q = query_new();
-    q->buf[0] = '\0';
-    q->len = 1;
-    query_write(q, "empty");
+    for(newlen=0; (c = *p++) != '\0'; newlen++)
+        if (c == '\n' || c == '\r')
+            newlen++;
 
-    if (query_read(q, "query.rp") != LUDIS_OK) {
-        fprintf(stderr, "err\n");
-        goto error;
-    }
-    
-    for (i = 0; i < q->len; i++)
-        debug_chr(q->buf[i]);
-    
-    query_free(q);
-error:
-    if (q) query_free(q);
-}*/
+    p = (char *)malloc(sizeof(char) * newlen + 1);
 
-void
-test_str(void)
-{
-    char *s;
+    while((c = *s++) != '\0') 
+        switch(c) {
+        case 10:
+            *p++ = '\\';
+            *p++ = 'n';
+            break;
+        case 13:
+            *p++ = '\\';
+            *p++ = 'r';
+            break;
+        default:
+            *p++ = c;
+            break;
+        }
 
-    s = str_new(16);
-    assert(str_len(s) == 16);
-
-    /*m = str_len(s);
-    n = buffer_read(b, s);
-
-    test("buffer_read ", n == m);
-
-    for (i = 0; i < n; i++)
-        assert(b->buf[i] == s[i]);
-
-    free(s);*/
-    str_free(s);
+    *p = '\0';
+    return p - newlen;
 }
 
-int 
-main(void) 
+void
+log_proto(char *s)
 {
-    test_str();
-    return 0;
+    char *p;
+    p = escape_crlf(s);
+    log_info("%s", p);
+    free(p);
 }
