@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "str.h"
+#include "common.h"
 
 /* str_new allocates a new buffer of n size.  it returns a pointer
  * to the str */
@@ -82,7 +83,7 @@ buffer_read(struct buffer *b, char *p)
 char
 buffer_read_byte(struct buffer *b)
 {
-    char c;
+    int c;
 
     if (b->off >= str_len(b->s)) {
         return EOF;
@@ -93,7 +94,7 @@ buffer_read_byte(struct buffer *b)
 
     return c;
 }
-/*
+
 int 
 buffer_read_from(struct buffer *b, int fd)
 {
@@ -101,4 +102,3 @@ buffer_read_from(struct buffer *b, int fd)
 
     return nread;
 }
-*/

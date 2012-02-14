@@ -20,7 +20,7 @@ TEST(net_gai_connect) {
 TEST(net_connect) {
 	int nread;
     struct client c;
-	char buf[NET_READSIZE];
+	char buf[IOBUFLEN];
     char *out = "*1\r\n$4\r\nPING\r\n";
     struct net_addr addr;
 
@@ -33,7 +33,7 @@ TEST(net_connect) {
     log_proto(out);
 
     /* read response */
-    nread = read(c.fd, buf, NET_READSIZE);
+    nread = read(c.fd, buf, IOBUFLEN);
     assert(nread >= 0);
     buf[nread] = '\0';
     log_proto(buf);

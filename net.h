@@ -5,7 +5,6 @@
 #include <netinet/in.h> /* sockaddr_in/6 */
 #include <sys/un.h>     /* sockaddr_un */
 
-#define NET_READSIZE 1024 * 16
 
 struct net_addr {
     int sa_family;

@@ -15,11 +15,6 @@ COLOR_TEST = @printf '    %b %b\n' $(BINCOLOR)$@$(ENDCOLOR);
 
 all: $(BIN)
 
-#ludis.o: ludis.c ludis.h common.h net.h
-#ludis-test.o: ludis-test.c common.h ludis.h net.h test.h
-#net.o: net.c net.h
-#net-test.o: net-test.c net.h test.h
-
 addr.o: addr.c
 ludis.o: ludis.c common.h ludis.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h

@@ -55,17 +55,13 @@ net_connect(struct client *c, struct net_addr addr)
     if ((fd = socket(addr.sa_family, SOCK_STREAM, 0)) == -1)
         goto error;
 
-    printf("socket ok\n");
-
     if (connect(fd, &addr.sa_addr.addr, addr.sa_addrlen) == -1) {
         fprintf(stderr, "%s\n", strerror(errno));
         close(fd);
         goto error;
     }
 
-    printf("connect ok\n");
     c->fd = fd;
-
     return LUDIS_OK;
 error:
     return LUDIS_ERR;
