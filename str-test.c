@@ -32,12 +32,12 @@ error:
 
 TEST(str) {
     char *s;
+    int m;
 
     s = str_new(16);
-    assert(str_len(s) == 16);
+    assert(m = (str_len(s)) == 0);
 
-    /*m = str_len(s);
-    n = buffer_read(b, s);
+    /*n = buffer_read(b, s);
 
     test("buffer_read ", n == m);
 

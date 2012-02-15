@@ -3,7 +3,7 @@ CFLAGS ?= -ansi -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
 		  -Wno-variadic-macros -Wno-strict-aliasing
 DEBUG ?= -g -ggdb
 CC = gcc 
-OBJ = ludis.o net.o str.o
+OBJ = ludis.o net.o str.o lmalloc.o
 
 SRCCOLOR="\033[34m"
 BINCOLOR="\033[39;1m"
@@ -16,13 +16,14 @@ COLOR_TEST = @printf '    %b %b\n' $(BINCOLOR)$@$(ENDCOLOR);
 all: $(BIN)
 
 addr.o: addr.c
+lmalloc.o: lmalloc.c
 ludis.o: ludis.c common.h ludis.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h
 net.o: net.c common.h net.h
 net-test.o: net-test.c net.h common.h test.h
 query.o: query.c
-str.o: str.c
-str-test.o: str-test.c test.h str.c
+str.o: str.c str.h common.h lmalloc.h
+str-test.o: str-test.c test.h str.h
 test.o: test.c test.h
 
 ludis-test: ludis-test.o test.o $(OBJ)

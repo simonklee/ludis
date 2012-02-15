@@ -2,21 +2,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "str.h"
 #include "common.h"
+#include "lmalloc.h"
 
 /* str_new allocates a new buffer of n size.  it returns a pointer
  * to the str */
 str
 str_new(size_t n)
 {
-    struct str_header *b;
+    struct str_header *h;
 
-    b = calloc(1, offsetof(struct str_header, buf) + n);
-    b->len = n;
-    b->alloc = n;
-    return b->buf;
+    h = lcalloc(1, offsetof(struct str_header, buf) + n);
+    h->len = 0;
+    h->alloc = n;
+    return h->buf;
 }
 
 int
@@ -43,13 +45,28 @@ str_grow(str s, const int n)
     if (h->alloc - h->len >= n)
         return s;
 
-    new_h = realloc(s, offsetof(struct str_header, buf) + h->alloc + n);
-
-    if (new_h == NULL) 
-        return NULL;
-
+    new_h = lrealloc(s, offsetof(struct str_header, buf) + h->alloc + n);
     new_h->alloc =+ n;
     return s;
+}
+
+str
+str_append(str s, const void *data, size_t m)
+{
+    struct str_header *h;
+    str p;
+
+    p = str_grow(s, m);
+    h = (void *)(p - offsetof(struct str_header, buf));
+    memcpy(h->buf + h->len, data, m);
+    h->len += m;
+    return p;
+}
+
+str
+str_appends(str s, const char *data)
+{
+    return str_append(s, data, strlen(data));
 }
 
 void
@@ -99,6 +116,14 @@ int
 buffer_read_from(struct buffer *b, int fd)
 {
     int nread = 0;
+    char *p;
 
+    p = str_grow(b->s, IOBUFLEN);
+
+    if ((nread = read(fd, p + str_len(p), IOBUFLEN)) == -1) {
+        /* check errno IO errors */
+    }
+
+    b->s = p;
     return nread;
 }

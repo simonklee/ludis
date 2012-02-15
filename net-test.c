@@ -10,7 +10,7 @@
 #include "common.h"
 #include "test.h"
 
-TEST(net_gai_connect) {
+TEST(gai_connect) {
     /*if (net_connect_gai(&c) != 0) {
         fprintf(stderr, "net_connect err");
         goto error;
@@ -46,5 +46,6 @@ int
 main(void)
 {
     test_net_connect();
+    test_gai_connect();
     return 0;
 }
