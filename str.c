@@ -119,11 +119,19 @@ buffer_read_from(struct buffer *b, int fd)
     char *p;
 
     p = str_grow(b->s, IOBUFLEN);
+    nread = read(fd, p + str_len(p), IOBUFLEN);
 
-    if ((nread = read(fd, p + str_len(p), IOBUFLEN)) == -1) {
+    switch(nread) {
+    case -1:
         /* check errno IO errors */
-    }
+        goto error;
+    case 0:
+        /* EOF/connection lost */
+    } 
 
     b->s = p;
     return nread;
+error:
+    close(fd);
+    return LUDIS_ERR;
 }
