@@ -61,5 +61,3 @@ lfree(void *ptr)
     assert(ptr);
     free(ptr);
 }
-
-

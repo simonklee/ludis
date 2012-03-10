@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "str.h"
 #include "common.h"
@@ -124,9 +125,15 @@ buffer_read_from(struct buffer *b, int fd)
     switch(nread) {
     case -1:
         /* check errno IO errors */
+        /*if (errno == EAGAIN) {
+            async 
+        } else {
+            goto error;
+        }*/
         goto error;
     case 0:
         /* EOF/connection lost */
+        goto error;
     } 
 
     b->s = p;
