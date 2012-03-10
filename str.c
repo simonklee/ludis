@@ -82,20 +82,34 @@ str_free(str s)
 
 /* str_reset discards the str.*/
 
-/* str_read reads len(b) bytes from str.  returns n read or
- * EOF. */
-int
-buffer_read(struct buffer *b, char *p)
-{
-    int len = str_len(b->s);
+struct buffer *
+buffer_new(str s) {
+    struct buffer *b;
+    b->off = 0;
+    b->s = s;
+    return b;
+}
 
-    if (b->off >= len) {
+/* str_read reads len(b) bytes from buffer. 
+ * returns n read or if n > b->off. */
+int
+buffer_nread(struct buffer *b, char *p, int n)
+{
+    if (b->off >= n) {
         return EOF;
     }
 
-    memcpy(p, b->s, len);
-    b->off += len;
-    return len;
+    memcpy(p, b->s, n);
+    b->off += n;
+    return n;
+}
+
+/* str_read reads len(b) bytes from buffer. 
+ * returns n read or EOF. */
+int
+buffer_read(struct buffer *b, char *p)
+{
+    return buffer_nread(b, p, str_len(b->s));
 }
 
 char

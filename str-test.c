@@ -31,20 +31,25 @@ error:
 }*/
 
 TEST(str) {
-    char *s;
-    int m;
+    str s;
+    struct buffer *b;
+    char p[16];
+    int m, n, i;
 
     s = str_new(16);
     assert(m = (str_len(s)) == 0);
+    str_appends(s, "hello");
 
-    /*n = buffer_read(b, s);
+    b = buffer_new(s);
+    n = buffer_reads(b, p);
 
-    test("buffer_read ", n == m);
+    printf("%d - %d\n", m, n);
+    assert(n == m);
 
     for (i = 0; i < n; i++)
-        assert(b->buf[i] == s[i]);
+        assert(b->s[i] == s[i]);
 
-    free(s);*/
+    free(s);
     str_free(s);
 }
 
