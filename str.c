@@ -93,6 +93,7 @@ str_free(str s)
 
 /* str_reset discards the str.*/
 
+/* buffer_new returns a new buffer for str */
 struct buffer *
 buffer_new(str s) {
     struct buffer *b;
@@ -103,6 +104,7 @@ buffer_new(str s) {
     return b;
 }
 
+/* buffer_free free's buffer */
 void 
 buffer_free(struct buffer *b) 
 {
@@ -131,6 +133,8 @@ buffer_reads(struct buffer *b, char *p)
     return buffer_read(b, p, str_len(b->s));
 }
 
+/* buffer_read_byte read a single byte of the buffer
+ * returns a single byte or EOF */
 char
 buffer_read_byte(struct buffer *b)
 {
@@ -146,6 +150,8 @@ buffer_read_byte(struct buffer *b)
     return c;
 }
 
+/* buffer_read_from reads from the file descriptor onto the buffer
+ * returns nread */
 int 
 buffer_read_from(struct buffer *b, int fd)
 {
