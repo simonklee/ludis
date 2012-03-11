@@ -1,23 +1,6 @@
 #ifndef _STR_H
 #define _STR_H
 
-/*
- * What is a str and how should the interface look like.
- *
- * Should the be implemented like Go buffer or just a manipulation of
- * c char *. String functions should act on char *, while buffer should
- * act as a Go Buffer 
- *
- * the underlying type in a buffer is a dynamic char *. creating a buffer 
- * requires one call to malloc. 
- *
- * Principal functions used to manipulate a str
- *
- * len()   — returns the len of the buffer or the unread portion? O(1)
- * grow()  —  
- *
- *
- * */
 typedef char * str;
 
 struct str_header {
