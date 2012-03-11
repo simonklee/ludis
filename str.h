@@ -1,17 +1,13 @@
 #ifndef _STR_H
 #define _STR_H
 
+/* str implements a binary safe dynamic string library */
 typedef char * str;
 
 struct str_header {
     int   cap;    /* nr of allocated bytes */
     int   len;    /* nr of used bytes */
     char  buf[1]; /* s var length buf */
-};
-
-struct buffer {
-    int off;      /* current read offset */
-    str s;
 };
 
 int str_avail(const str s);
@@ -22,6 +18,14 @@ str str_appends(str s, const char *data);
 str str_grow(str s, const int n);
 str str_new(size_t n);
 void str_free(str s);
+
+/* buffer implements a simple variable sized byte buffer
+ * on top of the str interface.*/
+
+struct buffer {
+    int off;      /* current read offset */
+    str s;
+};
 
 int buffer_len(struct buffer *b);
 int buffer_read(struct buffer *b, char *dest, int n);
