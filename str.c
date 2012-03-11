@@ -174,7 +174,7 @@ buffer_write(struct buffer *b, const void *data, size_t n)
 /* buffer_write appends the contents of s to the buffer 
  * returns n bytes written */
 int 
-buffer_writes(struct buffer *b, char *s)
+buffer_writes(struct buffer *b, const char *s)
 {
     return buffer_write(b, s, strlen(s));
 }
