@@ -30,38 +30,50 @@ error:
     if (q) query_free(q);
 }*/
 
-TEST(str) {
-    str s;
+TEST(buf) {
     struct buffer *b;
     char p[16];
     int m, nread, i;
 
-    s = str_new(16);
-    assert((m = str_len(s)) == 0);
-    printf("%d\n", m);
-    printf("%s\n", s);
-    str_appends(s, "hello");
+    b = buffer_new(0);
 
-    m = str_len(s);
-    b = buffer_new(s);
-    nread = buffer_reads(b, p);
+    assert(buffer_read(b, p, 16)== EOF);
+    assert(buffer_reads(b, p) == EOF);
 
+    /*
     printf("%d == %d\n", m, nread);
     assert(nread == m);
 
     for (i = 0; i < nread; i++)
-        printf("%c", b->s[i]);
-        /* assert(b->s[i] == s[i]); */
+        assert(b->s[i] == s[i]);
 
-    printf("\n");
+    str_free(s);*/
+    buffer_free(b);
+}
+
+
+TEST(str) {
+    str s;
+    char p[16];
+
+    s = str_new(16);
+
+    assert(str_len(s) == 0);
+    assert(str_avail(s) == 16);
+
+    sprintf(p, "hello");
+    str_appends(s, p);
+
+    assert(str_len(s) == (int)strlen(p));
+    assert(str_avail(s) == str_cap(s) - (int)strlen(p));
 
     str_free(s);
-    buffer_free(b);
 }
 
 int 
 main(void) 
 {
     test_str();
+    test_buf();
     return 0;
 }

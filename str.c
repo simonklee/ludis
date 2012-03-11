@@ -18,7 +18,7 @@ str_new(size_t n)
 
     h = lcalloc(1, offsetof(struct str_header, buf) + n + 1);
     h->len = 0;
-    h->alloc = n;
+    h->cap = n;
     h->buf[n] = '\0';
     return h->buf;
 }
@@ -36,7 +36,15 @@ int
 str_avail(const str s)
 {
     struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    return h->alloc - h->len;
+    return h->cap - h->len;
+}
+
+/* str_cap returns the total capacity space in the str buf */
+int
+str_cap(const str s)
+{
+    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
+    return h->cap;
 }
 
 /* str_grow guarantees that the str buf has n free bytes 
@@ -48,12 +56,12 @@ str_grow(str s, const int n)
 
     h = (void *)(s - offsetof(struct str_header, buf));
 
-    if (h->alloc - h->len >= n)
+    if (h->cap - h->len >= n)
         return s;
 
-    new_h = lrealloc(h, offsetof(struct str_header, buf) + h->alloc + n + 1);
-    new_h->alloc =+ n;
-    new_h->buf[new_h->alloc] = '\0';
+    new_h = lrealloc(h, offsetof(struct str_header, buf) + h->cap + n + 1);
+    new_h->cap =+ n;
+    new_h->buf[new_h->cap] = '\0';
     return new_h->buf;
 }
 
@@ -93,9 +101,20 @@ str_free(str s)
 
 /* str_reset discards the str.*/
 
+/* buffer_new returns a new buffer */
+struct buffer *
+buffer_new(size_t n) {
+    struct buffer *b;
+
+    b = lmalloc(sizeof(struct buffer));
+    b->off = 0;
+    b->s = str_new(n);
+    return b;
+}
+
 /* buffer_new returns a new buffer for str */
 struct buffer *
-buffer_new(str s) {
+buffer_new_str(str s) {
     struct buffer *b;
 
     b = lmalloc(sizeof(struct buffer));
@@ -111,16 +130,26 @@ buffer_free(struct buffer *b)
     free(b);
 }
 
-/* reads len(b) bytes from buffer. 
- * returns n read or if n > b->off. */
-int
-buffer_read(struct buffer *b, char *p, int n)
+/* buffer_len returns number of bytes in the unread portion of the buffer */
+int 
+buffer_len(struct buffer *b)
 {
-    if (b->off >= n) {
+    return str_len(b->s) - b->off;
+}
+
+/* reads the next n or until the buffer is drained.
+ * returns n bytes read or EOF if no data is avail. */
+int
+buffer_read(struct buffer *b, char *dest, int n)
+{
+    int len = buffer_len(b);
+
+    if (len <= 0) {
         return EOF;
     }
 
-    memcpy(p, b->s, n);
+    n = len < n ? len : n; /* min */
+    memcpy(dest, b->s, n);
     b->off += n;
     return n;
 }

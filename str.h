@@ -21,7 +21,7 @@
 typedef char * str;
 
 struct str_header {
-    int   alloc;  /* nr of allocated bytes */
+    int   cap;    /* nr of allocated bytes */
     int   len;    /* nr of used bytes */
     char  buf[1]; /* s var length buf */
 };
@@ -34,14 +34,16 @@ struct buffer {
 str str_new(size_t n);
 int str_len(const str s);
 int str_avail(const str s);
+int str_cap(const str s);
 str str_grow(str s, const int n);
 str str_append(str s, const void *data, size_t n);
 str str_appends(str s, const char *data);
 void str_free(str s);
 
-struct buffer *buffer_new(str s);
+struct buffer *buffer_new(size_t n);
+struct buffer *buffer_new_str(str s);
 void buffer_free(struct buffer *b);
-int buffer_read(struct buffer *b, char *p, int n);
+int buffer_read(struct buffer *b, char *dest, int n);
 int buffer_reads(struct buffer *b, char *p);
 char buffer_read_byte(struct buffer *b);
 int buffer_read_from(struct buffer *b, int fd);
