@@ -41,6 +41,12 @@ TEST(buf) {
     assert(buffer_read(b, p, 16)== EOF);
     assert(buffer_reads(b, p) == EOF);
 
+    assert(buffer_writes(b, "hello") == 5);
+    assert(buffer_len(b)== 5);
+    assert(buffer_read(b, p, 2) == 2); 
+    assert(buffer_reads(b, p) == 3);
+    assert(buffer_reads(b, p) == EOF); /* drained */
+
     /*
     printf("%d == %d\n", m, nread);
     assert(nread == m);
