@@ -9,19 +9,21 @@
 #include "common.h"
 #include "lmalloc.h"
 
-/* str_new allocates a new buffer of n size.  it returns a pointer
- * to the str */
+/* str_new allocates a new str buf of size n.  
+ * Returns a pointer str */
 str
 str_new(size_t n)
 {
     struct str_header *h;
 
-    h = lcalloc(1, offsetof(struct str_header, buf) + n);
+    h = lcalloc(1, offsetof(struct str_header, buf) + n + 1);
     h->len = 0;
     h->alloc = n;
+    h->buf[n] = '\0';
     return h->buf;
 }
 
+/* str_len returns the current len of the str buf */
 int
 str_len(const str s)
 {
@@ -29,6 +31,7 @@ str_len(const str s)
     return h->len;
 }
 
+/* str_avail returns the free space in the str buf */
 int
 str_avail(const str s)
 {
@@ -36,6 +39,8 @@ str_avail(const str s)
     return h->alloc - h->len;
 }
 
+/* str_grow guarantees that the str buf has n free bytes 
+ * returns a pointer to the newly str */
 str
 str_grow(str s, const int n)
 {
@@ -46,30 +51,36 @@ str_grow(str s, const int n)
     if (h->alloc - h->len >= n)
         return s;
 
-    new_h = lrealloc(s, offsetof(struct str_header, buf) + h->alloc + n);
+    new_h = lrealloc(h, offsetof(struct str_header, buf) + h->alloc + n + 1);
     new_h->alloc =+ n;
-    return s;
+    new_h->buf[new_h->alloc] = '\0';
+    return new_h->buf;
 }
 
+/* str_append appends n bytes from data to the end of str 
+ * returns a pointer to str */
 str
-str_append(str s, const void *data, size_t m)
+str_append(str s, const void *data, size_t n)
 {
     struct str_header *h;
     str p;
 
-    p = str_grow(s, m);
+    p = str_grow(s, n);
     h = (void *)(p - offsetof(struct str_header, buf));
-    memcpy(h->buf + h->len, data, m);
-    h->len += m;
+    memcpy(h->buf + h->len, data, n);
+    h->len += n;
     return p;
 }
 
+/* str_appends appends strlen(data) bytes from data to the end of str 
+ * returns a pointer to str */
 str
 str_appends(str s, const char *data)
 {
     return str_append(s, data, strlen(data));
 }
 
+/* str_free free's str */
 void
 str_free(str s)
 {
@@ -85,15 +96,23 @@ str_free(str s)
 struct buffer *
 buffer_new(str s) {
     struct buffer *b;
+
+    b = lmalloc(sizeof(struct buffer));
     b->off = 0;
     b->s = s;
     return b;
 }
 
-/* str_read reads len(b) bytes from buffer. 
+void 
+buffer_free(struct buffer *b) 
+{
+    free(b);
+}
+
+/* reads len(b) bytes from buffer. 
  * returns n read or if n > b->off. */
 int
-buffer_nread(struct buffer *b, char *p, int n)
+buffer_read(struct buffer *b, char *p, int n)
 {
     if (b->off >= n) {
         return EOF;
@@ -104,12 +123,12 @@ buffer_nread(struct buffer *b, char *p, int n)
     return n;
 }
 
-/* str_read reads len(b) bytes from buffer. 
+/* reads len(b) bytes from buffer. 
  * returns n read or EOF. */
 int
-buffer_read(struct buffer *b, char *p)
+buffer_reads(struct buffer *b, char *p)
 {
-    return buffer_nread(b, p, str_len(b->s));
+    return buffer_read(b, p, str_len(b->s));
 }
 
 char

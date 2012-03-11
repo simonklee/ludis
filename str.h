@@ -35,13 +35,14 @@ str str_new(size_t n);
 int str_len(const str s);
 int str_avail(const str s);
 str str_grow(str s, const int n);
-str str_append(str s, const void *data, size_t m);
+str str_append(str s, const void *data, size_t n);
 str str_appends(str s, const char *data);
 void str_free(str s);
 
 struct buffer *buffer_new(str s);
-int buffer_read(struct buffer *b, char *p);
-int buffer_nread(struct buffer *b, char *p, int n);
+void buffer_free(struct buffer *b);
+int buffer_read(struct buffer *b, char *p, int n);
+int buffer_reads(struct buffer *b, char *p);
 char buffer_read_byte(struct buffer *b);
 int buffer_read_from(struct buffer *b, int fd);
 
