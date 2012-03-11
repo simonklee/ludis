@@ -48,7 +48,7 @@ TEST(buf) {
     for (i = 0; i < nread; i++)
         assert(b->s[i] == s[i]);
 
-    str_free(s);*/
+    */
     buffer_free(b);
 }
 

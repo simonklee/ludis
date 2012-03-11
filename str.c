@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "str.h"
 #include "common.h"
@@ -127,6 +128,7 @@ buffer_new_str(str s) {
 void 
 buffer_free(struct buffer *b) 
 {
+    str_free(b->s);
     free(b);
 }
 
@@ -197,7 +199,7 @@ buffer_read_byte(struct buffer *b)
 }
 
 /* buffer_read_from reads from the file descriptor onto the buffer
- * returns nread */
+ * returns nread bytes or LUDIS_ERR */
 int 
 buffer_read_from(struct buffer *b, int fd)
 {
@@ -225,5 +227,15 @@ buffer_read_from(struct buffer *b, int fd)
     return nread;
 error:
     close(fd);
+    return LUDIS_ERR;
+}
+
+/* buffer_write_to wirtes to the file descriptor until the buffer is drained
+ * returns n written bytes or LUDIS_ERR*/
+int 
+buffer_write_to(struct buffer *b, int fd)
+{
+    assert(b);
+    assert(fd);
     return LUDIS_ERR;
 }
