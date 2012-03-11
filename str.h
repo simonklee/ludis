@@ -2,6 +2,7 @@
 #define _STR_H
 
 /* str implements a binary safe dynamic string library */
+
 typedef char * str;
 
 struct str_header {
