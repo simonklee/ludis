@@ -33,10 +33,11 @@ error:
 TEST(buf) {
     struct buffer *b;
     char p[16];
-    int m, nread, i;
+    /*int m, nread, i;*/
 
     b = buffer_new(0);
 
+    assert(buffer_len(b)== 0);
     assert(buffer_read(b, p, 16)== EOF);
     assert(buffer_reads(b, p) == EOF);
 

@@ -43,9 +43,12 @@ void str_free(str s);
 struct buffer *buffer_new(size_t n);
 struct buffer *buffer_new_str(str s);
 void buffer_free(struct buffer *b);
+int buffer_len(struct buffer *b);
 int buffer_read(struct buffer *b, char *dest, int n);
 int buffer_reads(struct buffer *b, char *p);
-char buffer_read_byte(struct buffer *b);
+int buffer_write(struct buffer *b, const void *data, size_t n);
+int buffer_writes(struct buffer *b, char *s);
+int buffer_read_byte(struct buffer *b);
 int buffer_read_from(struct buffer *b, int fd);
 
 #endif

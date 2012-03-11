@@ -162,14 +162,31 @@ buffer_reads(struct buffer *b, char *p)
     return buffer_read(b, p, str_len(b->s));
 }
 
+/* buffer_write appends the contents of data to the buffer 
+ * returns n bytes written */
+int 
+buffer_write(struct buffer *b, const void *data, size_t n)
+{
+    b->s = str_append(b->s, data, n);
+    return n;
+}
+
+/* buffer_write appends the contents of s to the buffer 
+ * returns n bytes written */
+int 
+buffer_writes(struct buffer *b, char *s)
+{
+    return buffer_write(b, s, strlen(s));
+}
+
 /* buffer_read_byte read a single byte of the buffer
  * returns a single byte or EOF */
-char
+int
 buffer_read_byte(struct buffer *b)
 {
     int c;
 
-    if (b->off >= str_len(b->s)) {
+    if (buffer_len(b) <= 0) {
         return EOF;
     }
 
