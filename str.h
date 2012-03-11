@@ -31,24 +31,24 @@ struct buffer {
     str s;
 };
 
-str str_new(size_t n);
-int str_len(const str s);
 int str_avail(const str s);
 int str_cap(const str s);
-str str_grow(str s, const int n);
+int str_len(const str s);
 str str_append(str s, const void *data, size_t n);
 str str_appends(str s, const char *data);
+str str_grow(str s, const int n);
+str str_new(size_t n);
 void str_free(str s);
 
-struct buffer *buffer_new(size_t n);
-struct buffer *buffer_new_str(str s);
-void buffer_free(struct buffer *b);
 int buffer_len(struct buffer *b);
 int buffer_read(struct buffer *b, char *dest, int n);
+int buffer_read_byte(struct buffer *b);
+int buffer_read_from(struct buffer *b, int fd);
 int buffer_reads(struct buffer *b, char *p);
 int buffer_write(struct buffer *b, const void *data, size_t n);
 int buffer_writes(struct buffer *b, char *s);
-int buffer_read_byte(struct buffer *b);
-int buffer_read_from(struct buffer *b, int fd);
+struct buffer *buffer_new(size_t n);
+struct buffer *buffer_new_str(str s);
+void buffer_free(struct buffer *b);
 
 #endif
