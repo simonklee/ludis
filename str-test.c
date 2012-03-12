@@ -47,14 +47,9 @@ TEST(buf) {
     assert(buffer_reads(b, p) == 3);
     assert(buffer_reads(b, p) == EOF); /* drained */
 
-    /*
-    printf("%d == %d\n", m, nread);
-    assert(nread == m);
+    for (i = 0; i < 5; i++)
+        assert(b->s[i] == p[i]);
 
-    for (i = 0; i < nread; i++)
-        assert(b->s[i] == s[i]);
-
-    */
     buffer_free(b);
 }
 
