@@ -10,6 +10,8 @@
 #include "lmalloc.h"
 #include "str.h"
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 /* str_new allocates a new str buf of size n.  
  * Returns a pointer str */
 str
@@ -139,6 +141,24 @@ buffer_len(struct buffer *b)
     return str_len(b->s) - b->off;
 }
 
+/* buffer_next gives you a pointer to the next byte and advances read offset 
+ * by n. returns n or the number of bytes availible if n is larger than buf len.
+ * returns EOF if buffer is empty or drained. */
+int
+buffer_next(struct buffer *b, char **p, int n)
+{
+    int len = buffer_len(b);
+
+    if (len <= 0) {
+        return EOF;
+    }
+
+    n = MIN(len, n);
+    *p = b->s + b->off;
+    b->off += n;
+    return n;
+}
+
 /* reads the next n or until the buffer is drained.
  * returns n bytes read or EOF if no data is avail. */
 int
@@ -150,8 +170,8 @@ buffer_read(struct buffer *b, char *dest, int n)
         return EOF;
     }
 
-    n = len < n ? len : n;
-    memcpy(dest, b->s, n);
+    n = MIN(len, n);
+    memcpy(dest, b->s + b->off, n);
     b->off += n;
     return n;
 }

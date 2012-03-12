@@ -33,7 +33,8 @@ error:
 TEST(buf) {
     struct buffer *b;
     char p[16];
-    /*int m, nread, i;*/
+    char *ptr;
+    int i;
 
     b = buffer_new(0);
 
@@ -44,13 +45,20 @@ TEST(buf) {
     assert(buffer_writes(b, "hello") == 5);
     assert(buffer_len(b)== 5);
     assert(buffer_read(b, p, 2) == 2); 
-    assert(buffer_reads(b, p) == 3);
-    assert(buffer_reads(b, p) == EOF); /* drained */
+    assert(buffer_reads(b, p+2) == 3);
+    assert(buffer_reads(b, p+5) == EOF); /* drained */
 
     for (i = 0; i < 5; i++)
+        /*printf("%c vs %c\n", b->s[i], p[i]);*/
         assert(b->s[i] == p[i]);
 
     buffer_free(b);
+
+    b = buffer_new(0);
+    assert(buffer_writes(b, "hello") == 5);
+    assert(buffer_next(b, &ptr, 1));
+    assert(ptr[0] == 'h');
+    assert(ptr[6] == '\0');
 }
 
 

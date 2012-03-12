@@ -29,6 +29,7 @@ struct buffer {
 };
 
 int buffer_len(struct buffer *b);
+int buffer_next(struct buffer *b, char **p, int n);
 int buffer_read(struct buffer *b, char *dest, int n);
 int buffer_read_byte(struct buffer *b);
 int buffer_read_from(struct buffer *b, int fd);
