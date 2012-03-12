@@ -69,7 +69,7 @@ TEST(str) {
     assert(str_avail(s) == 16);
 
     sprintf(p, "hello");
-    str_appends(s, p);
+    s = str_appends(s, p);
 
     assert(str_len(s) == (int)strlen(p));
     assert(str_avail(s) == str_cap(s) - (int)strlen(p));

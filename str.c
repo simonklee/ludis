@@ -1,14 +1,14 @@
+#include <assert.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
-#include <assert.h>
 
-#include "str.h"
 #include "common.h"
 #include "lmalloc.h"
+#include "str.h"
 
 /* str_new allocates a new str buf of size n.  
  * Returns a pointer str */
@@ -150,7 +150,7 @@ buffer_read(struct buffer *b, char *dest, int n)
         return EOF;
     }
 
-    n = len < n ? len : n; /* min */
+    n = len < n ? len : n;
     memcpy(dest, b->s, n);
     b->off += n;
     return n;
@@ -165,7 +165,7 @@ buffer_reads(struct buffer *b, char *p)
 }
 
 /* buffer_write appends the contents of data to the buffer 
- * returns n bytes written */
+ * returns n write bytes */
 int 
 buffer_write(struct buffer *b, const void *data, size_t n)
 {
@@ -174,7 +174,7 @@ buffer_write(struct buffer *b, const void *data, size_t n)
 }
 
 /* buffer_write appends the contents of s to the buffer 
- * returns n bytes written */
+ * returns n write bytes */
 int 
 buffer_writes(struct buffer *b, const char *s)
 {
@@ -199,7 +199,7 @@ buffer_read_byte(struct buffer *b)
 }
 
 /* buffer_read_from reads from the file descriptor onto the buffer
- * returns nread bytes or LUDIS_ERR */
+ * returns n read bytes or LUDIS_ERR */
 int 
 buffer_read_from(struct buffer *b, int fd)
 {
@@ -230,8 +230,8 @@ error:
     return LUDIS_ERR;
 }
 
-/* buffer_write_to wirtes to the file descriptor until the buffer is drained
- * returns n written bytes or LUDIS_ERR*/
+/* buffer_write_to writes to the file descriptor until the buffer is drained
+ * returns n write bytes or LUDIS_ERR */
 int 
 buffer_write_to(struct buffer *b, int fd)
 {

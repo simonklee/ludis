@@ -30,13 +30,13 @@ TEST(net_connect) {
 
     /* write data */
     assert(write(c.fd, out, strlen(out)) >= 0);
-    log_proto(out);
+    /*log_proto(out); */
 
     /* read response */
     nread = read(c.fd, buf, IOBUFLEN);
     assert(nread >= 0);
     buf[nread] = '\0';
-    log_proto(buf);
+    /*log_proto(buf);*/
 
     /* close connection */
 	close(c.fd);
