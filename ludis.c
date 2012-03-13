@@ -80,6 +80,10 @@ format_argv(char **dest, struct command *cmd)
     size = sprintf(buf, "*%d\r\n", cmd->argc);
     out = str_append(out, buf, size);
 
+    /* debug */
+    printf("len:\t%d\n", cmd->len);
+    printf("argc:\t%d\n", cmd->argc);
+
     for (i = 0; i < cmd->argc; i++) {
         size = sprintf(buf, "$%d\r\n", cmd->argc);
         out = str_append(out, buf, size);
@@ -92,18 +96,15 @@ format_argv(char **dest, struct command *cmd)
     assert(str_len(out) == cmd->len);
     *dest = out;
 
-    /* debug */
     log_proto(out);
-    printf("len:\t%d\n", cmd->len);
-    printf("argc:\t%d\n", cmd->argc);
-
+    
     return cmd->len;
 }
 
 int 
 vformat(char **str, const char *fmt, va_list ap)
 {
-    int off, c, size;
+    int off, size, i;
     const char *p = fmt;
     char *item;
     Str s;
@@ -114,16 +115,18 @@ vformat(char **str, const char *fmt, va_list ap)
     cmd.len = 0;
     off = 0;
 
-    while((c = *p++) != '\0') {
+    for(i = 0; p[i] != '\0'; i++) {
+        printf("fmt + %d: %p - `%c`\n", i, &fmt[i], fmt[i]);
+    }
+
+    for(; *p != '\0'; p++) {
         /* debug */
-        printf("--> %c ", c);
+        printf("--> %c %p ", *p, p);
 
-        switch(c) {
-        case '%':
+        if (*p == '%') {
             off += 2;
-            c = *p++;
 
-            switch(c) {
+            switch(*++p) {
             case 'b':
                 item = va_arg(ap, char *);
                 size = va_arg(ap, size_t);
@@ -142,14 +145,18 @@ vformat(char **str, const char *fmt, va_list ap)
             s = str_append(s, item, size);
 
             /* debug */
-            printf("found %c ... ", c);
+            printf("found %c ... ", *p);
             printf("%d ... ", size);
             printf("%s ... ", s);
-
-            break;
-
-        case ' ':
-            size = (p - (fmt + off)) - 1; 
+        } else {
+            if (*p == ' ') {
+                size = (p - (fmt + off)); 
+            } else if (*(p + 1) == '\0') {
+                size = (p + 1 - (fmt + off)); 
+            } else {
+                printf("\n");
+                continue;
+            }
 
             if (size > 0) {
                 s = str_new(size);
@@ -161,32 +168,14 @@ vformat(char **str, const char *fmt, va_list ap)
                 printf("%d ... ", size);
                 printf("%s ... ", s);
             } else {
-                printf("NOT appending");
+                printf("NOT appending ");
                 /*        |     */
                 /* "SET %s bar" */
+                off++;
+                continue;
             }
 
             off++;
-            break;
-            
-        default:
-            if (p[1] == '\0') {
-                p++;
-                size = (p - (fmt + off)) - 1; 
-                printf("size: %d, off: %d\n", size, off);
-
-                if (size > 0) {
-                    s = str_new(size);
-                    s = str_append(s, fmt + off, size);
-                    off += size;
-                }
-                off++;
-                break;
-            } else {
-                /* debug */
-                printf("\n");
-                continue;
-            }
         }
         
         cmd.argv = lrealloc(cmd.argv, sizeof(Str) * (cmd.argc + 1));
