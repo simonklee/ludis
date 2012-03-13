@@ -17,12 +17,12 @@ all: $(BIN)
 
 addr.o: addr.c
 lmalloc.o: lmalloc.c
-ludis.o: ludis.c common.h ludis.h lmalloc.h
+ludis.o: ludis.c common.h lmalloc.h test.h ludis.h str.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h
 net.o: net.c common.h net.h
 net-test.o: net-test.c net.h common.h test.h
 query.o: query.c
-str.o: str.c str.h common.h lmalloc.h
+str.o: str.c common.h lmalloc.h str.h
 str-test.o: str-test.c test.h str.h
 test.o: test.c test.h
 
@@ -38,15 +38,17 @@ str-test: str-test.o test.o $(OBJ)
 flags:
 	@echo "$(CFLAGS) $(DEBUG)"
 
-test: clean ludis-test net-test str-test clean_o
+test: clean ludis-test clean_o
 	./ludis-test
-	./net-test
-	./str-test
-
+#test: clean ludis-test net-test str-test clean_o
+#	./ludis-test
+#	./net-test
+#	./str-test
+#
 test_val: clean ludis-test net-test str-test clean_o
 	valgrind ./ludis-test
-	valgrind ./net-test
-	valgrind ./str-test
+#	valgrind ./net-test
+#   valgrind ./str-test
 
 %.o: %.c
 	$(COLOR_CC)$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@
