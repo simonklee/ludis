@@ -17,7 +17,7 @@ all: $(BIN)
 
 addr.o: addr.c
 lmalloc.o: lmalloc.c
-ludis.o: ludis.c common.h ludis.h
+ludis.o: ludis.c common.h ludis.h lmalloc.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h
 net.o: net.c common.h net.h
 net-test.o: net-test.c net.h common.h test.h

@@ -12,9 +12,9 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/* str_new allocates a new str buf of size n.  
- * Returns a pointer str */
-str
+/* str_new allocates a new Str buf of size n.  
+ * Returns a pointer Str */
+Str
 str_new(size_t n)
 {
     struct str_header *h;
@@ -26,34 +26,34 @@ str_new(size_t n)
     return h->buf;
 }
 
-/* str_len returns the current len of the str buf */
+/* str_len returns the current len of the Str buf */
 int
-str_len(const str s)
+str_len(const Str s)
 {
     struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
     return h->len;
 }
 
-/* str_avail returns the free space in the str buf */
+/* str_avail returns the free space in the Str buf */
 int
-str_avail(const str s)
+str_avail(const Str s)
 {
     struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
     return h->cap - h->len;
 }
 
-/* str_cap returns the total capacity space in the str buf */
+/* str_cap returns the total capacity space in the Str buf */
 int
-str_cap(const str s)
+str_cap(const Str s)
 {
     struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
     return h->cap;
 }
 
-/* str_grow guarantees that the str buf has n free bytes 
- * returns a pointer to the newly str */
-str
-str_grow(str s, const int n)
+/* str_grow guarantees that the Str buf has n free bytes 
+ * returns a pointer to the newly Str */
+Str
+str_grow(Str s, const int n)
 {
     struct str_header *h, *new_h;
 
@@ -68,13 +68,13 @@ str_grow(str s, const int n)
     return new_h->buf;
 }
 
-/* str_append appends n bytes from data to the end of str 
- * returns a pointer to str */
-str
-str_append(str s, const void *data, size_t n)
+/* str_append appends n bytes from data to the end of Str 
+ * returns a pointer to Str */
+Str
+str_append(Str s, const void *data, size_t n)
 {
     struct str_header *h;
-    str p;
+    Str p;
 
     p = str_grow(s, n);
     h = (void *)(p - offsetof(struct str_header, buf));
@@ -83,24 +83,24 @@ str_append(str s, const void *data, size_t n)
     return p;
 }
 
-/* str_appends appends strlen(data) bytes from data to the end of str 
- * returns a pointer to str */
-str
-str_appends(str s, const char *data)
+/* str_appends appends strlen(data) bytes from data to the end of Str 
+ * returns a pointer to Str */
+Str
+str_appends(Str s, const char *data)
 {
     return str_append(s, data, strlen(data));
 }
 
-/* str_free free's str */
+/* str_free free's Str */
 void
-str_free(str s)
+str_free(Str s)
 {
     struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
     free(h);
 }
 
 /* str_truncate discards all but the first unread byte in the
- * str */
+ * Str */
 
 /* str_reset discards the str.*/
 
@@ -115,9 +115,9 @@ buffer_new(size_t n) {
     return b;
 }
 
-/* buffer_new returns a new buffer for str */
+/* buffer_new returns a new buffer for Str */
 struct buffer *
-buffer_new_str(str s) {
+buffer_new_str(Str s) {
     struct buffer *b;
 
     b = lmalloc(sizeof(struct buffer));

@@ -63,7 +63,7 @@ TEST(buf) {
 
 
 TEST(str) {
-    str s;
+    Str s;
     char p[16];
 
     s = str_new(16);

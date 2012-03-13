@@ -44,7 +44,7 @@ lcalloc(size_t nmemb, size_t size)
 void *
 lrealloc(void *ptr, size_t size)
 {
-    assert(ptr);
+    /* assert(ptr); */
     assert(size);
     ptr = realloc(ptr, size);
 
