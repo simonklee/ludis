@@ -8,31 +8,6 @@
 #include "ludis.h"
 #include "str.h"
 
-/* we do not know how many arguments we recieved
- * we can only know by parsing the fmt str and 
- * counting % occurences.
- *
- * accept two formats:
- *
- *     %s - \0 terminated string
- *     %b - binary blob of data, requires size_t
- *
- * parse str
- *
- *     1. check if byte is '%'
- *         YES. 
- *             check if we are at the end of a cmd
- *                 YES.
- *                     add cmd to commands list
- *             continue to %s and %b parser
- *         NO.
- *             check if byte is ' '
- *                YES.
- *                    end of a cmd
- *                NO.
- *                
- * */
-
 struct command {
     int  len;
     int  argc;
@@ -61,7 +36,7 @@ int_len(int n)
 static size_t 
 arg_len(size_t bulklen)
 {
-    /*     $   intlen  \r\n   data        \r\n */
+    /*     $   int_len           \r\n data     \r\n */
     return 1 + int_len(bulklen) + 2 + bulklen + 2;
 }
 
@@ -85,7 +60,7 @@ format_argv(char **dest, struct command *cmd)
     printf("argc:\t%d\n", cmd->argc);
 
     for (i = 0; i < cmd->argc; i++) {
-        size = sprintf(buf, "$%d\r\n", cmd->argc);
+        size = sprintf(buf, "$%d\r\n", str_len(cmd->argv[i]));
         out = str_append(out, buf, size);
         out = str_append(out, cmd->argv[i], str_len(cmd->argv[i]));
         out = str_append(out, "\r\n", 2);
@@ -96,6 +71,7 @@ format_argv(char **dest, struct command *cmd)
     assert(str_len(out) == cmd->len);
     *dest = out;
 
+    /* debug */
     log_proto(out);
     
     return cmd->len;
@@ -161,7 +137,7 @@ vformat(char **str, const char *fmt, va_list ap)
             if (size > 0) {
                 s = str_new(size);
                 s = str_append(s, fmt + off, size);
-                off += size;
+                off += size + 1;
 
                 /* debug */
                 printf("appending ... ");
@@ -174,8 +150,6 @@ vformat(char **str, const char *fmt, va_list ap)
                 off++;
                 continue;
             }
-
-            off++;
         }
         
         cmd.argv = lrealloc(cmd.argv, sizeof(Str) * (cmd.argc + 1));
@@ -197,6 +171,12 @@ error:
     return LUDIS_ERR;
 }
 
+/* we do not know how many arguments we recieved
+ * accept two formats:
+ *
+ *     %s - \0 terminated string
+ *     %b - binary blob of data, requires size_t
+ * */
 int
 format(char **str, const char *fmt, ...)
 {
