@@ -56,8 +56,8 @@ format_argv(char **dest, struct command *cmd)
     out = str_append(out, buf, size);
 
     /* debug */
-    printf("len:\t%d\n", cmd->len);
-    printf("argc:\t%d\n", cmd->argc);
+    /*printf("len:\t%d\n", cmd->len);
+    printf("argc:\t%d\n", cmd->argc);*/
 
     for (i = 0; i < cmd->argc; i++) {
         size = sprintf(buf, "$%d\r\n", str_len(cmd->argv[i]));
@@ -72,7 +72,7 @@ format_argv(char **dest, struct command *cmd)
     *dest = out;
 
     /* debug */
-    log_proto(out);
+    /*log_proto(out);*/
     
     return cmd->len;
 }
@@ -80,7 +80,7 @@ format_argv(char **dest, struct command *cmd)
 int 
 vformat(char **str, const char *fmt, va_list ap)
 {
-    int off, size, i;
+    int off, size;
     const char *p = fmt;
     char *item;
     Str s;
@@ -91,13 +91,13 @@ vformat(char **str, const char *fmt, va_list ap)
     cmd.len = 0;
     off = 0;
 
-    for(i = 0; p[i] != '\0'; i++) {
+    /*for(i = 0; p[i] != '\0'; i++) {
         printf("fmt + %d: %p - `%c`\n", i, &fmt[i], fmt[i]);
-    }
+    }*/
 
     for(; *p != '\0'; p++) {
         /* debug */
-        printf("--> %c %p ", *p, p);
+        /*printf("--> %c %p ", *p, p);*/
 
         if (*p == '%') {
             off += 2;
@@ -121,16 +121,16 @@ vformat(char **str, const char *fmt, va_list ap)
             s = str_append(s, item, size);
 
             /* debug */
-            printf("found %c ... ", *p);
+            /*printf("found %c ... ", *p);
             printf("%d ... ", size);
-            printf("%s ... ", s);
+            printf("%s ... ", s);*/
         } else {
             if (*p == ' ') {
                 size = (p - (fmt + off)); 
             } else if (*(p + 1) == '\0') {
                 size = (p + 1 - (fmt + off)); 
             } else {
-                printf("\n");
+                /*printf("\n");*/
                 continue;
             }
 
@@ -140,11 +140,11 @@ vformat(char **str, const char *fmt, va_list ap)
                 off += size + 1;
 
                 /* debug */
-                printf("appending ... ");
+                /*printf("appending ... ");
                 printf("%d ... ", size);
-                printf("%s ... ", s);
+                printf("%s ... ", s);*/
             } else {
-                printf("NOT appending ");
+                /*printf("NOT appending ");*/
                 /*        |     */
                 /* "SET %s bar" */
                 off++;
@@ -157,7 +157,7 @@ vformat(char **str, const char *fmt, va_list ap)
         cmd.len += arg_len(size);
 
         /* debug */
-        printf("%d\n", 1 + 1     + 2    + str_len(s) + 2);
+        /*printf("%d\n", 1 + 1     + 2    + str_len(s) + 2);*/
     }
 
     return format_argv(str, &cmd);

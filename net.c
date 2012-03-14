@@ -20,7 +20,7 @@
 #include "net.h"
 
 struct net_addr
-net_addr(struct sockaddr_in sa) 
+net_addr_from_in(struct sockaddr_in sa) 
 {
     struct net_addr a;
 
@@ -33,6 +33,19 @@ net_addr(struct sockaddr_in sa)
 }    
 
 struct net_addr
+net_addr_from_in6(struct sockaddr_in6 sa) 
+{
+    struct net_addr a;
+
+    memset(&a, 0, sizeof(a));
+    a.sa_family = sa.sin6_family;
+    a.sa_addrlen = sizeof(sa);
+    a.sa_addr.in6 = sa;
+
+    return a;
+}
+
+struct net_addr
 net_addr_in(const char *ip, int port)
 {
     struct sockaddr_in sa;
@@ -42,7 +55,20 @@ net_addr_in(const char *ip, int port)
     sa.sin_port = htons(port);
     inet_pton(AF_INET, ip, &sa.sin_addr);
 
-    return net_addr(sa);
+    return net_addr_from_in(sa);
+}
+
+struct net_addr
+net_addr_in6(const char *ip, int port)
+{
+    struct sockaddr_in6 sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sin6_family = AF_INET6;
+    sa.sin6_port = htons(port);
+    inet_pton(AF_INET6, ip, &sa.sin6_addr);
+
+    return net_addr_from_in6(sa);
 }
 
 int
@@ -68,7 +94,7 @@ error:
 }
 
 /*int
-net_connect_gai(struct client *ctx)
+net_connect_gai(struct client *c)
 {
     int s, r;
     struct addrinfo hints;
@@ -98,7 +124,7 @@ net_connect_gai(struct client *ctx)
         }
 
         printf("connect ok\n");
-        ctx->fd = s;
+        c->fd = s;
         break;
     }
 

@@ -23,7 +23,7 @@ struct client {
     struct net_addr addr;
 };
 
-struct net_addr net_addr(struct sockaddr_in sa);
+struct net_addr net_addr_from_in(struct sockaddr_in sa);
 struct net_addr net_addr_in(const char *ip, int port);
 int net_connect(struct client *c, struct net_addr addr);
 int net_connect_gai(struct client *c);

@@ -11,7 +11,8 @@
 #include "test.h"
 
 TEST(gai_connect) {
-    /*if (net_connect_gai(&c) != 0) {
+    /*
+    if (net_connect_gai(&c) != 0) {
         fprintf(stderr, "net_connect err");
         goto error;
     }*/

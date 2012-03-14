@@ -38,17 +38,15 @@ str-test: str-test.o test.o $(OBJ)
 flags:
 	@echo "$(CFLAGS) $(DEBUG)"
 
-test: clean ludis-test clean_o
+test: clean ludis-test net-test str-test clean_o
 	./ludis-test
-#test: clean ludis-test net-test str-test clean_o
-#	./ludis-test
-#	./net-test
-#	./str-test
-#
+	./net-test
+	./str-test
+
 test_val: clean ludis-test net-test str-test clean_o
 	valgrind ./ludis-test
-#	valgrind ./net-test
-#   valgrind ./str-test
+	valgrind ./net-test
+	valgrind ./str-test
 
 %.o: %.c
 	$(COLOR_CC)$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@
