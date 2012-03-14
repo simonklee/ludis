@@ -24,7 +24,9 @@ struct client {
 };
 
 struct net_addr net_addr_from_in(struct sockaddr_in sa);
+struct net_addr net_addr_from_in6(struct sockaddr_in6 sa);
 struct net_addr net_addr_in(const char *ip, int port);
+struct net_addr net_addr_in6(const char *ip, int port);
 int net_connect(struct client *c, struct net_addr addr);
 int net_connect_gai(struct client *c);
 
