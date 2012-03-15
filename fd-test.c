@@ -27,50 +27,38 @@ TEST(fd6_connect) {
 }
 
 TEST(http_connect) {
-	int nread;
-    struct client c;
+    int nread, fd;
     struct net_addr addr;
 	char buf[IOBUFLEN];
     char *req = "GET http://simonklee.org/article/c-memory/ HTTP/1.0\n\n";
 
     addr = net_addr_in("178.79.132.213", 80);
-    c.fd = fd_connect_addr(addr);
-    assert(c.fd != LUDIS_ERR);
-    assert(write(c.fd, req, strlen(req)) >= 0);
 
-    nread = read(c.fd, buf, IOBUFLEN);
-    assert(nread >= 0);
-    buf[nread] = '\0';
-    /*printf(buf);*/
+    assert((fd = fd_connect_addr(addr)) != LUDIS_ERR);
+    assert(fd_write(fd, req, strlen(req)) == (int)strlen(req));
+    assert((nread = fd_read(fd, buf, IOBUFLEN)) > 0);
 
     /* close connection */
-	close(c.fd);
+	close(fd);
 }
 
 TEST(fd_connect) {
-	int nread;
-    struct client c;
+	int nread, fd;
 	char buf[IOBUFLEN];
-    char *out = "*1\r\n$4\r\nPING\r\n";
+    char *req = "*1\r\n$4\r\nPING\r\n";
     struct net_addr addr;
 
     /* connect */
     addr = net_addr_in("127.0.0.1", 6379);
-    c.fd = fd_connect_addr(addr);
-    assert(c.fd != LUDIS_ERR);
+    assert((fd = fd_connect_addr(addr)) != LUDIS_ERR);
+    assert(fd_write(fd, req, strlen(req)) == (int)strlen(req));
+    assert((nread = fd_read(fd, buf, IOBUFLEN)) > 0);
 
-    /* write data */
-    assert(write(c.fd, out, strlen(out)) >= 0);
-    /*log_proto(out); */
-
-    /* read response */
-    nread = read(c.fd, buf, IOBUFLEN);
-    assert(nread >= 0);
-    buf[nread] = '\0';
-    /*log_proto(buf);*/
+    /* buf[nread] = '\0';
+     * log_proto(buf);*/
 
     /* close connection */
-	close(c.fd);
+	close(fd);
 }
 
 int

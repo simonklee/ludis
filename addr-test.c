@@ -15,8 +15,8 @@ TEST(ip6_addr) {
 }
 
 TEST(ip4_addr) {
-    struct net_addr addr;
-    addr = net_addr_in("127.0.0.1", 6379);
+    /*struct net_addr addr;
+    addr = */net_addr_in("127.0.0.1", 6379);
 }
 
 int
