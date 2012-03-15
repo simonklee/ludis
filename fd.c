@@ -8,6 +8,35 @@
 #include "common.h"
 #include "fd.h"
 
+int 
+fd_read(int fd, void *buf, size_t n)
+{
+    int nread;
+
+    nread = read(fd, buf, n);
+
+    if (nread ==  -1)
+        return LUDIS_ESYS;
+
+    if (nread ==  0)
+        return LUDIS_EEOF;
+
+    return nread;
+}
+
+int 
+fd_write(int fd, const void *buf, size_t n)
+{
+    int nwrite;
+
+    nwrite = write(fd, buf, n);
+    
+    if (nwrite ==  -1)
+        return LUDIS_ESYS;
+
+    return nwrite;
+}
+
 static int
 fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 {
