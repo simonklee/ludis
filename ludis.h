@@ -1,5 +1,5 @@
-#ifndef _LUDIS_H
-#define _LUDIS_H
+#ifndef LUDIS_H
+#define LUDIS_H
 
 #include <stdarg.h>
 

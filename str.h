@@ -1,5 +1,5 @@
-#ifndef _STR_H
-#define _STR_H
+#ifndef LUDIS_STR_H
+#define LUDIS_STR_H
 
 /* Str implements a binary safe dynamic string library */
 

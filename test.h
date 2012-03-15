@@ -1,5 +1,5 @@
-#ifndef _TEST_H
-#define _TEST_H
+#ifndef LUDIS_TEST_H
+#define LUDIS_TEST_H
 
 #include <errno.h>
 #include <stddef.h>

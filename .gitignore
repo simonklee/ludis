@@ -1,6 +1,7 @@
 *.o
 ludis-test
-net-test
+addr-test
+fd-test
 str-test
 bin/
 usr/

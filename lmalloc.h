@@ -1,5 +1,5 @@
-#ifndef _LMALLOC_H
-#define _LMALLOC_H
+#ifndef LUDIS_LMALLOC_H
+#define LUDIS_LMALLOC_H
 
 void *lmalloc(size_t size);
 void *lfree(void *ptr);
