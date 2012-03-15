@@ -23,22 +23,24 @@ void str_free(Str s);
 /* buffer implements a simple variable sized byte buffer
  * on top of the Str interface.*/
 
-struct buffer {
+typedef struct str_buffer Buffer;
+
+struct str_buffer {
     int off;      /* current read offset */
     Str s;
 };
 
-int buffer_len(struct buffer *b);
-int buffer_next(struct buffer *b, char **p, int n);
-int buffer_read(struct buffer *b, char *dest, int n);
-int buffer_read_byte(struct buffer *b);
-int buffer_read_from(struct buffer *b, int fd);
-int buffer_reads(struct buffer *b, char *p);
-int buffer_write(struct buffer *b, const void *data, size_t n);
-int buffer_write_to(struct buffer *b, int fd);
-int buffer_writes(struct buffer *b, const char *s);
-struct buffer *buffer_new(size_t n);
-struct buffer *buffer_new_str(Str s);
-void buffer_free(struct buffer *b);
+int buffer_len(Buffer *b);
+int buffer_next(Buffer *b, char **p, int n);
+int buffer_read(Buffer *b, char *dest, int n);
+int buffer_read_byte(Buffer *b);
+int buffer_read_from(Buffer *b, int fd);
+int buffer_reads(Buffer *b, char *p);
+int buffer_write(Buffer *b, const void *data, size_t n);
+int buffer_write_to(Buffer *b, int fd);
+int buffer_writes(Buffer *b, const char *s);
+Buffer *buffer_new(size_t n);
+Buffer *buffer_new_str(Str s);
+void buffer_free(Buffer *b);
 
 #endif

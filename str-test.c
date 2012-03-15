@@ -31,7 +31,7 @@ error:
 }*/
 
 TEST(buf) {
-    struct buffer *b;
+    Buffer *b;
     char p[16];
     char *ptr;
     int i;

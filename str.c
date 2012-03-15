@@ -105,22 +105,22 @@ str_free(Str s)
 /* str_reset discards the str.*/
 
 /* buffer_new returns a new buffer */
-struct buffer *
+Buffer *
 buffer_new(size_t n) {
-    struct buffer *b;
+    Buffer *b;
 
-    b = lmalloc(sizeof(struct buffer));
+    b = lmalloc(sizeof(Buffer));
     b->off = 0;
     b->s = str_new(n);
     return b;
 }
 
 /* buffer_new returns a new buffer for Str */
-struct buffer *
+Buffer *
 buffer_new_str(Str s) {
-    struct buffer *b;
+    Buffer *b;
 
-    b = lmalloc(sizeof(struct buffer));
+    b = lmalloc(sizeof(Buffer));
     b->off = 0;
     b->s = s;
     return b;
@@ -128,7 +128,7 @@ buffer_new_str(Str s) {
 
 /* buffer_free free's buffer */
 void 
-buffer_free(struct buffer *b) 
+buffer_free(Buffer *b) 
 {
     str_free(b->s);
     free(b);
@@ -136,7 +136,7 @@ buffer_free(struct buffer *b)
 
 /* buffer_len returns number of bytes in the unread portion of the buffer */
 int 
-buffer_len(struct buffer *b)
+buffer_len(Buffer *b)
 {
     return str_len(b->s) - b->off;
 }
@@ -145,7 +145,7 @@ buffer_len(struct buffer *b)
  * by n. returns n or the number of bytes availible if n is larger than buf len.
  * returns EOF if buffer is empty or drained. */
 int
-buffer_next(struct buffer *b, char **p, int n)
+buffer_next(Buffer *b, char **p, int n)
 {
     int len = buffer_len(b);
 
@@ -162,7 +162,7 @@ buffer_next(struct buffer *b, char **p, int n)
 /* reads the next n or until the buffer is drained.
  * returns n bytes read or EOF if no data is avail. */
 int
-buffer_read(struct buffer *b, char *dest, int n)
+buffer_read(Buffer *b, char *dest, int n)
 {
     int len = buffer_len(b);
 
@@ -179,7 +179,7 @@ buffer_read(struct buffer *b, char *dest, int n)
 /* reads len(b) bytes from buffer. 
  * returns n read or EOF. */
 int
-buffer_reads(struct buffer *b, char *p)
+buffer_reads(Buffer *b, char *p)
 {
     return buffer_read(b, p, str_len(b->s));
 }
@@ -187,7 +187,7 @@ buffer_reads(struct buffer *b, char *p)
 /* buffer_write appends the contents of data to the buffer 
  * returns n write bytes */
 int 
-buffer_write(struct buffer *b, const void *data, size_t n)
+buffer_write(Buffer *b, const void *data, size_t n)
 {
     b->s = str_append(b->s, data, n);
     return n;
@@ -196,7 +196,7 @@ buffer_write(struct buffer *b, const void *data, size_t n)
 /* buffer_write appends the contents of s to the buffer 
  * returns n write bytes */
 int 
-buffer_writes(struct buffer *b, const char *s)
+buffer_writes(Buffer *b, const char *s)
 {
     return buffer_write(b, s, strlen(s));
 }
@@ -204,7 +204,7 @@ buffer_writes(struct buffer *b, const char *s)
 /* buffer_read_byte read a single byte of the buffer
  * returns a single byte or EOF */
 int
-buffer_read_byte(struct buffer *b)
+buffer_read_byte(Buffer *b)
 {
     int c;
 
@@ -221,7 +221,7 @@ buffer_read_byte(struct buffer *b)
 /* buffer_read_from reads from the file descriptor onto the buffer
  * returns n read bytes or LUDIS_ERR */
 int 
-buffer_read_from(struct buffer *b, int fd)
+buffer_read_from(Buffer *b, int fd)
 {
     int nread = 0;
     char *p;
@@ -253,7 +253,7 @@ error:
 /* buffer_write_to writes to the file descriptor until the buffer is drained
  * returns n write bytes or LUDIS_ERR */
 int 
-buffer_write_to(struct buffer *b, int fd)
+buffer_write_to(Buffer *b, int fd)
 {
     assert(b);
     assert(fd);
