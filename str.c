@@ -51,7 +51,7 @@ str_cap(const Str s)
 }
 
 /* str_grow guarantees that the Str buf has n free bytes 
- * returns a pointer to the newly Str */
+ * returns a pointer to the new Str */
 Str
 str_grow(Str s, const int n)
 {
@@ -115,7 +115,7 @@ buffer_new(size_t n) {
     return b;
 }
 
-/* buffer_new returns a new buffer for Str */
+/* buffer_new_str returns a new buffer for Str */
 Buffer *
 buffer_new_str(Str s) {
     Buffer *b;

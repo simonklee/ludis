@@ -1,9 +1,9 @@
-BIN=ludis-test fd-test str-test addr-test
+BIN=ludis-test fd-test str-test addr-test handle-test
 CFLAGS ?= -ansi -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
 		  -Wno-variadic-macros -Wno-strict-aliasing
 DEBUG ?= -g -ggdb
 CC = gcc 
-OBJ = ludis.o str.o lmalloc.o fd.o addr.o
+OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o
 
 SRCCOLOR="\033[34m"
 BINCOLOR="\033[39;1m"
@@ -15,12 +15,13 @@ COLOR_TEST = @printf '    %b %b\n' $(BINCOLOR)$@$(ENDCOLOR);
 
 all: $(BIN)
 
-addr.o: addr.c
+addr.o: addr.c addr.h
 addr-test.o: addr-test.c addr.h common.h test.h
-context.o: context.c
+context.o: context.c context.h
 fd.o: fd.c addr.h common.h fd.h
 fd-test.o: fd-test.c fd.h addr.h common.h test.h
-handle.o: handle.c
+handle.o: handle.c fd.h addr.h common.h handle.h str.h lmalloc.h
+handle-test.o: handle-test.c common.h test.h handle.h addr.h str.h
 lmalloc.o: lmalloc.c
 ludis.o: ludis.c common.h lmalloc.h test.h ludis.h str.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h str.h
@@ -41,20 +42,25 @@ addr-test: addr-test.o test.o $(OBJ)
 str-test: str-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
+handle-test: handle-test.o test.o $(OBJ)
+	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
+
 flags:
 	@echo "$(CFLAGS) $(DEBUG)"
 
-test: clean ludis-test fd-test addr-test str-test clean_o
-	./ludis-test
-	./str-test
+test: clean ludis-test handle-test fd-test addr-test str-test clean_o
 	./addr-test
 	./fd-test
+	./handle-test
+	./ludis-test
+	./str-test
 
 test_val: clean ludis-test fd-test add-test str-test clean_o
-	valgrind ./ludis-test
-	valgrind ./str-test
 	valgrind ./addr-test
 	valgrind ./fd-test
+	valgrind ./ludis-test
+	valgrind ./str-test
+	valgrind ./handle-test
 
 %.o: %.c
 	$(COLOR_CC)$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@

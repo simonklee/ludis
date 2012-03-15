@@ -1,9 +1,5 @@
 #include <stdio.h>
-#include <string.h>
-#include <malloc.h>
 #include <assert.h>
-
-#include <unistd.h> /* syscalls */
 
 #include "fd.h"
 #include "addr.h"
@@ -39,7 +35,7 @@ TEST(http_connect) {
     assert((nread = fd_read(fd, buf, IOBUFLEN)) > 0);
 
     /* close connection */
-	close(fd);
+	fd_close(fd);
 }
 
 TEST(fd_connect) {
@@ -58,7 +54,7 @@ TEST(fd_connect) {
      * log_proto(buf);*/
 
     /* close connection */
-	close(fd);
+	fd_close(fd);
 }
 
 int

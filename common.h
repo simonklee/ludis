@@ -30,10 +30,18 @@
  *    implements mid level connect, write_to/from_buffer, 
  *    read_to/from_buffer and status commands on fd.
  *
+ * ludis_handle
+ *
+ *    holds a file descriptor, wb, rb.
+ *
+ *    implements mid level net funcs
+ *
  * fd
  *
  *    implements low level read, write, connect_addr, connect_gai
  *    methods. These methods are all quiet simple and only handle
  *    the logic around i/o syscalls
+ *
+ *
  */
 #endif

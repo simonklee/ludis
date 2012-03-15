@@ -3,5 +3,6 @@ ludis-test
 addr-test
 fd-test
 str-test
+handle-test
 bin/
 usr/

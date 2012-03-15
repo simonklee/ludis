@@ -37,6 +37,17 @@ fd_write(int fd, const void *buf, size_t n)
     return nwrite;
 }
 
+int 
+fd_close(int fd)
+{
+    if (fd >= 0 && close(fd) == -1) {
+        fprintf(stderr, "%s\n", strerror(errno));
+        return LUDIS_ERR;
+    }
+
+    return LUDIS_OK;
+}
+
 static int
 fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 {
@@ -52,7 +63,7 @@ fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 
     return fd;
 error:
-    close(fd);
+    fd_close(fd);
     return LUDIS_ERR;
 }
 
