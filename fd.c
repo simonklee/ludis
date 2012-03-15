@@ -8,23 +8,29 @@
 #include "common.h"
 #include "fd.h"
 
-int
-fd_connect(struct net_addr addr)
+static int
+fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 {
     int fd;
 
-    if ((fd = socket(addr.sa_family, SOCK_STREAM, 0)) == -1)
+    if ((fd = socket(family, SOCK_STREAM, 0)) == -1)
         goto error;
 
-    if (connect(fd, &addr.sa_addr.addr, addr.sa_addrlen) == -1) {
+    if (connect(fd, addr, addrlen) == -1) {
         fprintf(stderr, "%s\n", strerror(errno));
-        close(fd);
         goto error;
     }
 
     return fd;
 error:
+    close(fd);
     return LUDIS_ERR;
+}
+
+int
+fd_connect_addr(struct net_addr addr)
+{
+    return fd_connect(addr.sa_family, &addr.sa_addr.addr, addr.sa_addrlen);
 }
 
 /*int

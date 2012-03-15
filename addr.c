@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <arpa/inet.h>  /* inet_pton/inet_ntop */
-#include <netdb.h>
 #include <netinet/in.h> /* sockaddr_in|6 */
-#include <sys/socket.h> /* socklen_t */
-#include <sys/types.h>
 #include <sys/un.h>     /* sockaddr_un */
+
 #include <unistd.h>     /* syscalls */
+#include <fcntl.h>
+
+#include <sys/types.h>
+#include <sys/socket.h> /* socklen_t */
+#include <netdb.h>
 
 #include "addr.h"
 /*static void debug_addrinfo(struct addrinfo *ai);*/
@@ -72,12 +76,12 @@ debug_addrinfo(struct addrinfo *ai)
 			"ai_addrlen: %d\n", ai->ai_flags, ai->ai_family, ai->ai_socktype, \
 			ai->ai_protocol, ai->ai_addrlen);
 			
-	switch(ai->ai_family) { // IPv4
+	switch(ai->ai_family) {
     case AF_INET: 
         {
 		    char ipstr[INET_ADDRSTRLEN];
-		    // inet_ntop(ai->ai_family, &(((struct sockaddr_in *)ai->ai_addr)->sin_addr), \
-			ipstr, sizeof ipstr);
+		    // inet_ntop(ai->ai_family, &(((struct sockaddr_in *)ai->ai_addr)->sin_addr),
+			// ipstr, sizeof ipstr);
             struct sockaddr_in *sockaddr_in_ptr;
             struct in_addr *in_addr_ptr;
 		
@@ -91,11 +95,11 @@ debug_addrinfo(struct addrinfo *ai)
         {
             char ipstr[INET6_ADDRSTRLEN];
             struct sockaddr_in6 *sockaddr_in6_ptr;
-            struct in6_addr *in6_addr_ptr; // ptr to store 
+            struct in6_addr *in6_addr_ptr; // ptr to store
             
-            sockaddr_in6_ptr = (struct sockaddr_in6 *)ai->ai_addr; // addr to sockaddr_in6
-            in6_addr_ptr = &(sockaddr_in6_ptr->sin6_addr); // address to struct in6_addr
-            inet_ntop(addr->ai_family, in6_addr_ptr, ipstr, sizeof ipstr);
+            sockaddr_in6_ptr = (struct sockaddr_in6 *)ai->ai_addr; // addr to sockaddr_in6 
+            in6_addr_ptr = &(sockaddr_in6_ptr->sin6_addr); // address to struct in6_addr 
+            inet_ntop(ai->ai_family, in6_addr_ptr, ipstr, sizeof ipstr);
             printf("IPv6-address: %s:%d\n", ipstr, sockaddr_in6_ptr->sin6_port);
         }
         break;

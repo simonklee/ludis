@@ -23,7 +23,7 @@ TEST(fd6_connect) {
     struct net_addr addr;
 
     addr = net_addr_in6("::1", 6379);
-    assert(fd_connect(&c, addr) == LUDIS_OK);*/
+    assert(fd_connect_addr(&c, addr) == LUDIS_OK);*/
 }
 
 TEST(http_connect) {
@@ -34,7 +34,7 @@ TEST(http_connect) {
     char *req = "GET http://simonklee.org/article/c-memory/ HTTP/1.0\n\n";
 
     addr = net_addr_in("178.79.132.213", 80);
-    c.fd = fd_connect(addr);
+    c.fd = fd_connect_addr(addr);
     assert(c.fd != LUDIS_ERR);
     assert(write(c.fd, req, strlen(req)) >= 0);
 
@@ -56,7 +56,7 @@ TEST(fd_connect) {
 
     /* connect */
     addr = net_addr_in("127.0.0.1", 6379);
-    c.fd = fd_connect(addr);
+    c.fd = fd_connect_addr(addr);
     assert(c.fd != LUDIS_ERR);
 
     /* write data */
