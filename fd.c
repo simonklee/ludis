@@ -18,10 +18,10 @@ fd_read(int fd, void *buf, size_t n)
 
     nread = read(fd, buf, n);
 
-    if (nread ==  -1)
+    if (nread == -1)
         return LUDIS_ESYS;
 
-    if (nread ==  0)
+    if (nread == 0)
         return LUDIS_EEOF;
 
     return nread;
@@ -34,7 +34,7 @@ fd_write(int fd, const void *buf, size_t n)
 
     nwrite = write(fd, buf, n);
     
-    if (nwrite ==  -1)
+    if (nwrite == -1)
         return LUDIS_ESYS;
 
     return nwrite;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "fd.h"
 #include "handle.h"
@@ -85,4 +86,32 @@ handle_connect_gai(struct ludis_handle *h, int family, const char *host,
     h->wb = buffer_new(0);
 
     return LUDIS_OK;
+}
+
+/* read from handler->fd, fill rbuf with contents */
+int 
+handle_read_to_rbuf(struct ludis_handle *h) 
+{
+    return buffer_read_from(h->rb, h->fd);
+}
+
+/* read from char *data, fill wbuf with contents */
+int handle_write_to_wbuf(struct ludis_handle *h, const char *data, size_t len) 
+{
+    int nwrite = 0;
+    assert(h);
+    assert(data);
+    assert(len);
+
+    return nwrite;
+}
+
+/* read data from handler->rb to char **p */
+/*int handle_flush_rbuf(struct ludis_handle *h, char **p);*/
+
+/* write wbuf data to handler->fd */
+int 
+handle_flush_wbuf(struct ludis_handle *h)
+{
+    return buffer_write_to(h->wb, h->fd);
 }

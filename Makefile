@@ -26,7 +26,7 @@ lmalloc.o: lmalloc.c
 ludis.o: ludis.c common.h lmalloc.h test.h ludis.h str.h
 ludis-test.o: ludis-test.c common.h ludis.h test.h str.h
 query.o: query.c
-str.o: str.c common.h lmalloc.h str.h
+str.o: str.c common.h lmalloc.h str.h fd.h
 str-test.o: str-test.c test.h str.h
 test.o: test.c test.h
 cw.o: cw.c handle.h lmalloc.h common.h addr.h

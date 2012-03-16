@@ -30,21 +30,31 @@ cw_page_handle_free(struct page_handle *p)
     return LUDIS_OK;
 }
 
+static int
+cw_page_handle_connect(struct page_handle *p, const char *url)
+{
+    int rv;
+    struct net_addr addr;
+
+    if ((rv = handle_connect_gai(p->c, AF_UNSPEC, url, 80, &addr)) != LUDIS_OK)
+        return rv;
+
+    p->addr = addr;
+    debug_netaddr(&p->addr);
+    return LUDIS_OK;
+}
+
 static int 
 cw_get(const char *url) 
 {
     int rv;
-    struct net_addr addr;
     struct page_handle *p;
 
     p = cw_page_handle_new();
-    rv = handle_connect_gai(p->c, AF_UNSPEC, url, 80, &addr);
 
-    if (rv != LUDIS_OK)
+    if ((rv = cw_page_handle_connect(p, url)) != LUDIS_OK)
         goto error;
 
-    p->addr = addr;
-    debug_netaddr(&p->addr);
     cw_page_handle_free(p);
     return LUDIS_OK;
 error:

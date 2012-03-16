@@ -79,7 +79,7 @@ debug_netaddr(struct net_addr *addr)
 		    addr_in = &addr->sa_addr.in;
 		    inet_ntop(AF_INET, &(addr_in->sin_addr), ip, sizeof(ip));
 
-		    printf("IPv4: %s:%d\n", ip, addr_in->sin_port);
+		    printf("\nIPv4: %s:%d\n", ip, addr_in->sin_port);
         }
         break;
     case AF_INET6:
@@ -90,7 +90,7 @@ debug_netaddr(struct net_addr *addr)
 		    addr_in6 = &addr->sa_addr.in6;
 		    inet_ntop(AF_INET6, &(addr_in6->sin6_addr), ip, sizeof(ip));
 
-		    printf("IPv6: %s:%d\n", ip, addr_in6->sin6_port);
+		    printf("\nIPv6: %s:%d\n", ip, addr_in6->sin6_port);
         }
         break;
     }

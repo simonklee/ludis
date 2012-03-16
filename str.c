@@ -9,6 +9,7 @@
 #include "common.h"
 #include "lmalloc.h"
 #include "str.h"
+#include "fd.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
@@ -218,44 +219,53 @@ buffer_read_byte(Buffer *b)
     return c;
 }
 
-/* buffer_read_from reads from the file descriptor onto the buffer
- * returns n read bytes or LUDIS_ERR */
+/* buffer_read_from reads from fd to buffer *b until EOF
+ * returns n read bytes or LUDIS_ESYS */
 int 
 buffer_read_from(Buffer *b, int fd)
 {
-    int nread = 0;
-    char *p;
+    int n, nread = 0;
+    char buf[IOBUFLEN];
 
-    p = str_grow(b->s, IOBUFLEN);
-    nread = read(fd, p + str_len(p), IOBUFLEN);
+    /* TODO: Truncate buffer first, if empty */
+    
+    while (1) {
+        n = fd_read(fd, buf, IOBUFLEN);
 
-    switch(nread) {
-    case -1:
-        /* check errno IO errors */
-        /*if (errno == EAGAIN) {
-            async 
-        } else {
-            goto error;
-        }*/
-        goto error;
-    case 0:
-        /* EOF/connection lost */
-        goto error;
-    } 
+        if (n == LUDIS_ESYS)
+            return n;
 
-    b->s = p;
+        if (n == LUDIS_EEOF)
+            break;
+
+        buffer_write(b, buf, n);
+        nread += n;
+    }
+
     return nread;
-error:
-    close(fd);
-    return LUDIS_ERR;
 }
 
-/* buffer_write_to writes to the file descriptor until the buffer is drained
- * returns n write bytes or LUDIS_ERR */
+/* buffer_write_to writes to fd until the buffer is drained
+ * returns n write bytes or LUDIS_ESYS */
 int 
 buffer_write_to(Buffer *b, int fd)
 {
-    assert(b);
-    assert(fd);
-    return LUDIS_ERR;
+    int rv, n, nwrite = 0;
+
+    while ((n = buffer_len(b)) > 0) {
+        n = MIN(IOBUFLEN, n);
+        rv = fd_write(fd, b->s + b->off, n);
+
+        if (rv == LUDIS_ESYS)
+            return rv;
+
+        assert(rv == n);
+
+        b->off += n;
+        nwrite += n;
+    }
+
+    /* TODO: Truncate buffer */
+
+    return nwrite;
 }
