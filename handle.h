@@ -16,5 +16,6 @@ int handle_close(struct ludis_handle *h);
 int handle_free(struct ludis_handle *h);
 
 int handle_connect_addr(struct ludis_handle *h, const struct net_addr addr);
+int handle_connect_gai(struct ludis_handle *h, int family, const char *host, int port, struct net_addr *addr);
 
 #endif

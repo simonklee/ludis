@@ -70,3 +70,19 @@ handle_connect_addr(struct ludis_handle *h, const struct net_addr addr)
 
     return LUDIS_OK;
 }
+
+int 
+handle_connect_gai(struct ludis_handle *h, int family, const char *host, 
+                   int port, struct net_addr *addr) 
+{
+    int fd;
+
+    if ((fd = fd_connect_gai(family, host, port, addr)) < 0)
+        return fd;
+
+    h->fd = fd;
+    h->rb = buffer_new(0);
+    h->wb = buffer_new(0);
+
+    return LUDIS_OK;
+}

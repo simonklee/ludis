@@ -1,6 +1,6 @@
-BIN=ludis-test fd-test str-test addr-test handle-test
-CFLAGS ?= -ansi -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
-		  -Wno-variadic-macros -Wno-strict-aliasing
+BIN=ludis-test fd-test str-test addr-test handle-test cw
+CFLAGS ?= -std=c89 -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
+		  -Wno-variadic-macros -Wno-strict-aliasing -D_POSIX_C_SOURCE=200112L
 DEBUG ?= -g -ggdb
 CC = gcc 
 OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o
@@ -29,6 +29,7 @@ query.o: query.c
 str.o: str.c common.h lmalloc.h str.h
 str-test.o: str-test.c test.h str.h
 test.o: test.c test.h
+cw.o: cw.c handle.h lmalloc.h common.h addr.h
 
 ludis-test: ludis-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
@@ -43,6 +44,9 @@ str-test: str-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
 handle-test: handle-test.o test.o $(OBJ)
+	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
+
+cw: cw.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
 flags:

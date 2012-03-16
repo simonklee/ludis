@@ -14,7 +14,6 @@
 #include <netdb.h>
 
 #include "addr.h"
-/*static void debug_addrinfo(struct addrinfo *ai);*/
 
 struct net_addr
 net_addr_from_in(struct sockaddr_in sa)
@@ -68,10 +67,39 @@ net_addr_in6(const char *ip, int port)
     return net_addr_from_in6(sa);
 }
 
-/*static void 
+void 
+debug_netaddr(struct net_addr *addr)
+{
+	switch(addr->sa_family) {
+    case AF_INET: 
+        {
+		    char ip[INET_ADDRSTRLEN];
+            struct sockaddr_in *addr_in;
+		
+		    addr_in = &addr->sa_addr.in;
+		    inet_ntop(AF_INET, &(addr_in->sin_addr), ip, sizeof(ip));
+
+		    printf("IPv4: %s:%d\n", ip, addr_in->sin_port);
+        }
+        break;
+    case AF_INET6:
+        {
+		    char ip[INET6_ADDRSTRLEN];
+            struct sockaddr_in6 *addr_in6;
+		
+		    addr_in6 = &addr->sa_addr.in6;
+		    inet_ntop(AF_INET6, &(addr_in6->sin6_addr), ip, sizeof(ip));
+
+		    printf("IPv6: %s:%d\n", ip, addr_in6->sin6_port);
+        }
+        break;
+    }
+}
+
+void 
 debug_addrinfo(struct addrinfo *ai)
 {
-	printf("addrinfo for %d\n", ai->ai_canonname);
+	printf("\naddrinfo for %s\n", ai->ai_canonname);
 	printf("ai_flag: %d, ai_family: %d, ai_socktype: %d, ai_protocol: %d "\
 			"ai_addrlen: %d\n", ai->ai_flags, ai->ai_family, ai->ai_socktype, \
 			ai->ai_protocol, ai->ai_addrlen);
@@ -80,28 +108,28 @@ debug_addrinfo(struct addrinfo *ai)
     case AF_INET: 
         {
 		    char ipstr[INET_ADDRSTRLEN];
-		    // inet_ntop(ai->ai_family, &(((struct sockaddr_in *)ai->ai_addr)->sin_addr),
-			// ipstr, sizeof ipstr);
+		    /* inet_ntop(ai->ai_family, &(((struct sockaddr_in *)ai->ai_addr)->sin_addr),*/
+			/* ipstr, sizeof ipstr);*/
             struct sockaddr_in *sockaddr_in_ptr;
             struct in_addr *in_addr_ptr;
 		
 		    sockaddr_in_ptr = (struct sockaddr_in *)ai->ai_addr;
 		    in_addr_ptr = &(sockaddr_in_ptr->sin_addr);
 		    inet_ntop(ai->ai_family, in_addr_ptr, ipstr, sizeof ipstr);
-		    printf("IPv4-address: %s:%d\n", ipstr, sockaddr_in_ptr->sin_port);
+		    printf("IPv4: %s:%d\n", ipstr, sockaddr_in_ptr->sin_port);
         }
         break;
     case AF_INET6:
         {
             char ipstr[INET6_ADDRSTRLEN];
             struct sockaddr_in6 *sockaddr_in6_ptr;
-            struct in6_addr *in6_addr_ptr; // ptr to store
+            struct in6_addr *in6_addr_ptr; /* ptr to store */
             
-            sockaddr_in6_ptr = (struct sockaddr_in6 *)ai->ai_addr; // addr to sockaddr_in6 
-            in6_addr_ptr = &(sockaddr_in6_ptr->sin6_addr); // address to struct in6_addr 
+            sockaddr_in6_ptr = (struct sockaddr_in6 *)ai->ai_addr; /* addr to sockaddr_in6 */
+            in6_addr_ptr = &(sockaddr_in6_ptr->sin6_addr); /* address to struct in6_addr */
             inet_ntop(ai->ai_family, in6_addr_ptr, ipstr, sizeof ipstr);
-            printf("IPv6-address: %s:%d\n", ipstr, sockaddr_in6_ptr->sin6_port);
+            printf("IPv6: %s:%d\n", ipstr, sockaddr_in6_ptr->sin6_port);
         }
         break;
 	}
-}*/
+}

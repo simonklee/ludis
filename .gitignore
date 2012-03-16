@@ -4,5 +4,6 @@ addr-test
 fd-test
 str-test
 handle-test
+cw
 bin/
 usr/
