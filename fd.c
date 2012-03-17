@@ -6,6 +6,7 @@
 #include <sys/socket.h> /* SOCK_STREAM */
 #include <sys/types.h>  /* SOCK_STREAM */
 #include <netdb.h>      /* addrinfo, sockaddr */
+#include <netinet/tcp.h> /* IPPROTO_TCP/TCP_NODELAY */
 
 #include "addr.h"
 #include "common.h"
@@ -16,7 +17,9 @@ fd_read(int fd, void *buf, size_t n)
 {
     int nread;
 
-    nread = read(fd, buf, n);
+    do {
+        nread = read(fd, buf, n);
+    } while (nread == -1 && errno == EINTR);
 
     if (nread == -1)
         return LUDIS_ESYS;
@@ -54,12 +57,17 @@ fd_close(int fd)
 static int
 fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 {
-    int fd;
+    int fd, yes = 1;
 
     if ((fd = socket(family, SOCK_STREAM, 0)) == -1)
         goto error;
 
     if (connect(fd, addr, addrlen) == -1) {
+        fprintf(stderr, "%s\n", strerror(errno));
+        goto error;
+    }
+
+    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
         fprintf(stderr, "%s\n", strerror(errno));
         goto error;
     }

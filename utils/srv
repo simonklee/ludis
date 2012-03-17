@@ -1,0 +1,3 @@
+#!/bin/sh
+cd utils
+while true; do sudo netcat -vv -l -p 80 < simple.html; sleep 1; done

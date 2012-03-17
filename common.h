@@ -43,6 +43,9 @@
  *    methods. These methods are all quiet simple and only handle
  *    the logic around i/o syscalls
  *
+ * cw
  *
+ *    implements mid level methods to retrieve and store the contents
+ *    of an url
  */
 #endif

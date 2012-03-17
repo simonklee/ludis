@@ -31,6 +31,12 @@ str-test.o: str-test.c test.h str.h
 test.o: test.c test.h
 cw.o: cw.c handle.h lmalloc.h common.h addr.h
 
+cw: cw.o $(OBJ)
+	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
+
+cw-test: clean cw clean_o
+	./cw simonklee.org http://simonklee.org/
+
 ludis-test: ludis-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
@@ -44,9 +50,6 @@ str-test: str-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
 handle-test: handle-test.o test.o $(OBJ)
-	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
-
-cw: cw.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
 flags:

@@ -229,7 +229,7 @@ buffer_read_from(Buffer *b, int fd)
 
     /* TODO: Truncate buffer first, if empty */
     
-    while (1) {
+    do {
         n = fd_read(fd, buf, IOBUFLEN);
 
         if (n == LUDIS_ESYS)
@@ -240,7 +240,7 @@ buffer_read_from(Buffer *b, int fd)
 
         buffer_write(b, buf, n);
         nread += n;
-    }
+    } while(1);
 
     return nread;
 }
@@ -260,12 +260,10 @@ buffer_write_to(Buffer *b, int fd)
             return rv;
 
         assert(rv == n);
-
         b->off += n;
         nwrite += n;
     }
 
     /* TODO: Truncate buffer */
-
     return nwrite;
 }

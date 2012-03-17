@@ -1,4 +1,3 @@
-/* Crawler is responsible for downloading HTML content from given urls */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -35,12 +34,54 @@ cw_page_handle_connect(struct page_handle *p, const char *url)
 {
     int rv;
     struct net_addr addr;
+    const char *a = url;
 
-    if ((rv = handle_connect_gai(p->c, AF_UNSPEC, url, 80, &addr)) != LUDIS_OK)
+    if (a[0] == 'h' || a[0] == 'H')
+        a += 7; /* ignore http:// */
+
+    if ((rv = handle_connect_gai(p->c, AF_UNSPEC, a, 80, &addr)) != LUDIS_OK)
         return rv;
 
     p->addr = addr;
     debug_netaddr(&p->addr);
+    return LUDIS_OK;
+}
+
+static int
+cw_fetch_url(struct page_handle *p, const char *url)
+{
+    int n, i;
+    char buf[255];
+
+    n = snprintf(buf, 255, "GET %s HTTP/1.1\r\nHost: simonklee.org\r\nConnection: Close\r\n\r\n", url);
+
+    printf("%d: %s\n", n, buf);
+    printf("... write \n");
+
+    if (buffer_write(p->c->wb, buf, n) != n) {
+        printf("err buffer_write\n");
+        return LUDIS_ERR;
+    }
+
+    printf("... write_to \n");
+
+    if (buffer_write_to(p->c->wb, p->c->fd) != n) {
+        /* TODO: handle write errors */
+        printf("err buffer_write_to\n");
+        return LUDIS_ERR;
+    }
+
+    printf("... read_from \n");
+
+    if ((n = buffer_read_from(p->c->rb, p->c->fd)) <= 0) {
+        /* TODO: handle response err */
+        printf("err buffer_read_from\n");
+        return n;
+    }
+
+    for (i = 0; i < buffer_len(p->c->rb); i++)
+        printf("%c", p->c->rb->s[i]);
+
     return LUDIS_OK;
 }
 
@@ -53,6 +94,11 @@ cw_get(const char *url)
     p = cw_page_handle_new();
 
     if ((rv = cw_page_handle_connect(p, url)) != LUDIS_OK)
+        goto error;
+
+    rv = cw_fetch_url(p, url);
+
+    if (rv != LUDIS_OK)
         goto error;
 
     cw_page_handle_free(p);
