@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>     /* stderror */
-#include <errno.h>      /* errno */ 
-#include <unistd.h>     /* syscalls */
-#include <sys/socket.h> /* SOCK_STREAM */
-#include <sys/types.h>  /* SOCK_STREAM */
-#include <netdb.h>      /* addrinfo, sockaddr */
+#include <string.h>      /* stderror */
+#include <errno.h>       /* errno */ 
+#include <unistd.h>      /* syscalls */
+#include <sys/socket.h>  /* SOCK_STREAM */
+#include <sys/types.h>   /* SOCK_STREAM */
+#include <netdb.h>       /* addrinfo, sockaddr */
 #include <netinet/tcp.h> /* IPPROTO_TCP/TCP_NODELAY */
+#include <fcntl.h>       /* fcntl NONBLOCK constants */
 
 #include "addr.h"
 #include "common.h"
@@ -55,9 +56,40 @@ fd_close(int fd)
 }
 
 static int
+fd_nonblock(int fd)
+{
+    int flags;
+
+    if ((flags = fcntl(fd, F_GETFL)) == -1) {
+        fprintf(stderr, "fcntl get flags: %s\n", strerror(errno));
+        return LUDIS_ERR;
+    }
+
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        fprintf(stderr, "fcntl set flags: %s\n", strerror(errno));
+        return LUDIS_ERR;
+    }
+
+    return LUDIS_OK;
+}
+
+static int
+fd_tcp_nodelay(int fd)
+{
+    int yes = 1;
+
+    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
+        fprintf(stderr, "%s\n", strerror(errno));
+        return LUDIS_ERR;
+    }
+
+    return LUDIS_OK;
+}
+
+static int
 fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
 {
-    int fd, yes = 1;
+    int fd;
 
     if ((fd = socket(family, SOCK_STREAM, 0)) == -1)
         goto error;
@@ -67,10 +99,12 @@ fd_connect(int family, const struct sockaddr *addr, socklen_t addrlen)
         goto error;
     }
 
-    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
-        fprintf(stderr, "%s\n", strerror(errno));
+    if (fd_tcp_nodelay(fd) != LUDIS_OK)
         goto error;
-    }
+
+    /*if (fd_nonblock(fd) != LUDIS_OK)
+        goto error;
+    */
 
     return fd;
 error:

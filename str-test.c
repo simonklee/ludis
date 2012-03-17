@@ -61,7 +61,6 @@ TEST(buf) {
     assert(ptr[6] == '\0');
 }
 
-
 TEST(str) {
     Str s;
     char p[16];

@@ -35,7 +35,7 @@ cw: cw.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
 
 cw-test: clean cw clean_o
-	./cw simonklee.org http://simonklee.org/
+	./cw http://simonklee.org
 
 ludis-test: ludis-test.o test.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
@@ -55,12 +55,13 @@ handle-test: handle-test.o test.o $(OBJ)
 flags:
 	@echo "$(CFLAGS) $(DEBUG)"
 
-test: clean ludis-test handle-test fd-test addr-test str-test clean_o
+test: clean cw ludis-test handle-test fd-test addr-test str-test clean_o
 	./addr-test
 	./fd-test
 	./handle-test
 	./ludis-test
 	./str-test
+	./cw http://simonklee.org
 
 test_val: clean ludis-test fd-test add-test str-test clean_o
 	valgrind ./addr-test

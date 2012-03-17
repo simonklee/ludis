@@ -35,6 +35,15 @@ str_len(const Str s)
     return h->len;
 }
 
+/* str_len increase the len of s by n, 
+ * returns the current len of the Str buf */
+int
+str_ilen(const Str s, int n)
+{
+    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
+    return (h->len += n);
+}
+
 /* str_avail returns the free space in the Str buf */
 int
 str_avail(const Str s)
@@ -76,6 +85,8 @@ str_append(Str s, const void *data, size_t n)
 {
     struct str_header *h;
     Str p;
+
+    assert(n > 0);
 
     p = str_grow(s, n);
     h = (void *)(p - offsetof(struct str_header, buf));
@@ -228,19 +239,17 @@ buffer_read_from(Buffer *b, int fd)
     char buf[IOBUFLEN];
 
     /* TODO: Truncate buffer first, if empty */
-    
     do {
         n = fd_read(fd, buf, IOBUFLEN);
 
-        if (n == LUDIS_ESYS)
-            return n;
+        if (n > 0) {
+            buffer_write(b, buf, n);
+            nread += n;
+        }
+    } while(n > 0);
 
-        if (n == LUDIS_EEOF)
-            break;
-
-        buffer_write(b, buf, n);
-        nread += n;
-    } while(1);
+    if (n == LUDIS_ESYS && errno != EAGAIN)
+        return n;
 
     return nread;
 }
