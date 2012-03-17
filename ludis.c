@@ -11,7 +11,7 @@
 struct command {
     int  len;
     int  argc;
-    Str *argv;
+    Str **argv;
 };
 
 /* calculates the len of an int */
@@ -44,11 +44,11 @@ arg_len(size_t bulklen)
 *  which contains the arguments for the command 
 *  returns the len of the command */
 int 
-format_argv(char **dest, struct command *cmd)
+format_argv(Str **dest, struct command *cmd)
 {
     int i, size;
     char buf[16];
-    Str out;
+    Str *out;
 
     cmd->len += 1 + int_len(cmd->argc) + 2;
     out = str_new(cmd->len);
@@ -56,13 +56,14 @@ format_argv(char **dest, struct command *cmd)
     out = str_append(out, buf, size);
 
     /* debug */
-    /*printf("len:\t%d\n", cmd->len);
-    printf("argc:\t%d\n", cmd->argc);*/
+    /* printf("len:\t%d\n", cmd->len);
+    printf("argc:\t%d\n", cmd->argc);
+    printf("data:\t%s\n", out->data); */
 
     for (i = 0; i < cmd->argc; i++) {
-        size = sprintf(buf, "$%d\r\n", str_len(cmd->argv[i]));
+        size = sprintf(buf, "$%d\r\n", cmd->argv[i]->len);
         out = str_append(out, buf, size);
-        out = str_append(out, cmd->argv[i], str_len(cmd->argv[i]));
+        out = str_cat(out, cmd->argv[i]);
         out = str_append(out, "\r\n", 2);
         str_free(cmd->argv[i]);
     }
@@ -72,18 +73,18 @@ format_argv(char **dest, struct command *cmd)
     *dest = out;
 
     /* debug */
-    /*log_proto(out);*/
+    /*log_proto(out->data);*/
     
     return cmd->len;
 }
 
 int 
-vformat(char **str, const char *fmt, va_list ap)
+vformat(Str **str, const char *fmt, va_list ap)
 {
     int off, size;
     const char *p = fmt;
     char *item;
-    Str s;
+    Str *s;
     struct command cmd;
 
     cmd.argv = NULL;
@@ -91,13 +92,14 @@ vformat(char **str, const char *fmt, va_list ap)
     cmd.len = 0;
     off = 0;
 
-    /*for(i = 0; p[i] != '\0'; i++) {
+    /* debug
+    for(i = 0; p[i] != '\0'; i++) {
         printf("fmt + %d: %p - `%c`\n", i, &fmt[i], fmt[i]);
-    }*/
+    } */
 
     for(; *p != '\0'; p++) {
         /* debug */
-        /*printf("--> %c %p ", *p, p);*/
+        /* printf("--> %c %p ", *p, p); */
 
         if (*p == '%') {
             off += 2;
@@ -121,16 +123,16 @@ vformat(char **str, const char *fmt, va_list ap)
             s = str_append(s, item, size);
 
             /* debug */
-            /*printf("found %c ... ", *p);
+            /* printf("found %c ... ", *p);
             printf("%d ... ", size);
-            printf("%s ... ", s);*/
+            printf("%s ... ", s->data); */
         } else {
             if (*p == ' ') {
                 size = (p - (fmt + off)); 
             } else if (*(p + 1) == '\0') {
                 size = (p + 1 - (fmt + off)); 
             } else {
-                /*printf("\n");*/
+                /* printf("\n"); */
                 continue;
             }
 
@@ -140,11 +142,11 @@ vformat(char **str, const char *fmt, va_list ap)
                 off += size + 1;
 
                 /* debug */
-                /*printf("appending ... ");
+                /* printf("appending ... ");
                 printf("%d ... ", size);
-                printf("%s ... ", s);*/
+                printf("%s ... ", s->data); */
             } else {
-                /*printf("NOT appending ");*/
+                /* printf("NOT appending "); */
                 /*        |     */
                 /* "SET %s bar" */
                 off++;
@@ -157,7 +159,7 @@ vformat(char **str, const char *fmt, va_list ap)
         cmd.len += arg_len(size);
 
         /* debug */
-        /*printf("%d\n", 1 + 1     + 2    + str_len(s) + 2);*/
+        /* printf("%d\n", 1 + 1     + 2    + s->len + 2); */
     }
 
     return format_argv(str, &cmd);
@@ -178,7 +180,7 @@ error:
  *     %b - binary blob of data, requires size_t
  * */
 int
-format(char **str, const char *fmt, ...)
+format(Str **str, const char *fmt, ...)
 {
     va_list ap;
     int ret;

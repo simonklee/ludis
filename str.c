@@ -15,100 +15,88 @@
 
 /* str_new allocates a new Str buf of size n.  
  * Returns a pointer Str */
-Str
+Str *
 str_new(size_t n)
 {
-    struct str_header *h;
+    Str *s;
 
-    h = lcalloc(1, offsetof(struct str_header, buf) + n + 1);
-    h->len = 0;
-    h->cap = n;
-    h->buf[n] = '\0';
-    return h->buf;
+    s = lcalloc(1, offsetof(Str, data) + n + 1);
+    s->len = 0;
+    s->cap = n;
+    s->data[n] = '\0';
+    return s;
 }
 
 /* str_len returns the current len of the Str buf */
 int
-str_len(const Str s)
+str_len(Str *s)
 {
-    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    return h->len;
-}
-
-/* str_len increase the len of s by n, 
- * returns the current len of the Str buf */
-int
-str_ilen(const Str s, int n)
-{
-    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    return (h->len += n);
+    return s->len;
 }
 
 /* str_avail returns the free space in the Str buf */
 int
-str_avail(const Str s)
+str_avail(Str *s)
 {
-    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    return h->cap - h->len;
+    return s->cap - s->len;
 }
 
 /* str_cap returns the total capacity space in the Str buf */
 int
-str_cap(const Str s)
+str_cap(Str *s)
 {
-    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    return h->cap;
+    return s->cap;
 }
 
 /* str_grow guarantees that the Str buf has n free bytes 
  * returns a pointer to the new Str */
-Str
-str_grow(Str s, const int n)
+Str *
+str_grow(Str *s, const int n)
 {
-    struct str_header *h, *new_h;
+    Str *new_s;
 
-    h = (void *)(s - offsetof(struct str_header, buf));
-
-    if (h->cap - h->len >= n)
+    if (str_avail(s) >= n)
         return s;
 
-    new_h = lrealloc(h, offsetof(struct str_header, buf) + h->cap + n + 1);
-    new_h->cap =+ n;
-    new_h->buf[new_h->cap] = '\0';
-    return new_h->buf;
+    new_s = lrealloc(s, offsetof(Str, data) + s->cap + n + 1);
+    new_s->cap =+ n;
+    new_s->data[new_s->cap] = '\0';
+    return new_s;
 }
 
 /* str_append appends n bytes from data to the end of Str 
  * returns a pointer to Str */
-Str
-str_append(Str s, const void *data, size_t n)
+Str *
+str_append(Str *s, const void *data, size_t n)
 {
-    struct str_header *h;
-    Str p;
-
     assert(n > 0);
 
-    p = str_grow(s, n);
-    h = (void *)(p - offsetof(struct str_header, buf));
-    memcpy(h->buf + h->len, data, n);
-    h->len += n;
-    return p;
+    s = str_grow(s, n);
+    memcpy(s->data + s->len, data, n);
+    s->len += n;
+    return s;
 }
 
 /* str_appends appends strlen(data) bytes from data to the end of Str 
  * returns a pointer to Str */
-Str
-str_appends(Str s, const char *data)
+Str *
+str_appends(Str *s, const char *data)
 {
     return str_append(s, data, strlen(data));
 }
 
+/* Concates b->data to s */
+Str *
+str_cat(Str *s, Str *b)
+{
+    return str_append(s, b->data, b->len);
+}
+
 /* str_free free's Str */
 void
-str_free(Str s)
+str_free(Str *s)
 {
-    struct str_header *h = (void *)(s - offsetof(struct str_header, buf));
-    free(h);
+    free(s);
 }
 
 /* str_truncate discards all but the first unread byte in the
@@ -129,7 +117,7 @@ buffer_new(size_t n) {
 
 /* buffer_new_str returns a new buffer for Str */
 Buffer *
-buffer_new_str(Str s) {
+buffer_new_str(Str *s) {
     Buffer *b;
 
     b = lmalloc(sizeof(Buffer));
@@ -155,41 +143,41 @@ buffer_len(Buffer *b)
 
 /* buffer_next gives you a pointer to the next byte and advances read offset 
  * by n. returns n or the number of bytes availible if n is larger than buf len.
- * returns EOF if buffer is empty or drained. */
+ * returns LUDIS_EEOF if buffer is empty or drained. */
 int
 buffer_next(Buffer *b, char **p, int n)
 {
     int len = buffer_len(b);
 
     if (len <= 0) {
-        return EOF;
+        return LUDIS_EEOF;
     }
 
     n = MIN(len, n);
-    *p = b->s + b->off;
+    *p = b->s->data + b->off;
     b->off += n;
     return n;
 }
 
 /* reads the next n or until the buffer is drained.
- * returns n bytes read or EOF if no data is avail. */
+ * returns n bytes read or LUDIS_EEOF if no data is avail. */
 int
 buffer_read(Buffer *b, char *dest, int n)
 {
     int len = buffer_len(b);
 
     if (len <= 0) {
-        return EOF;
+        return LUDIS_EEOF;
     }
 
     n = MIN(len, n);
-    memcpy(dest, b->s + b->off, n);
+    memcpy(dest, b->s->data + b->off, n);
     b->off += n;
     return n;
 }
 
 /* reads len(b) bytes from buffer. 
- * returns n read or EOF. */
+ * returns n read or LUDIS_EEOF. */
 int
 buffer_reads(Buffer *b, char *p)
 {
@@ -214,17 +202,17 @@ buffer_writes(Buffer *b, const char *s)
 }
 
 /* buffer_read_byte read a single byte of the buffer
- * returns a single byte or EOF */
+ * returns a single byte or LUDIS_EEOF */
 int
 buffer_read_byte(Buffer *b)
 {
     int c;
 
     if (buffer_len(b) <= 0) {
-        return EOF;
+        return LUDIS_EEOF;
     }
 
-    c = b->s[b->off];
+    c = b->s->data[b->off];
     b->off++;
 
     return c;
@@ -263,7 +251,7 @@ buffer_write_to(Buffer *b, int fd)
 
     while ((n = buffer_len(b)) > 0) {
         n = MIN(IOBUFLEN, n);
-        rv = fd_write(fd, b->s + b->off, n);
+        rv = fd_write(fd, b->s->data + b->off, n);
 
         if (rv == LUDIS_ESYS)
             return rv;

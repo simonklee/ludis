@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "test.h"
+#include "common.h"
 #include "str.h"
 
 /*void
@@ -39,18 +40,19 @@ TEST(buf) {
     b = buffer_new(0);
 
     assert(buffer_len(b)== 0);
-    assert(buffer_read(b, p, 16)== EOF);
-    assert(buffer_reads(b, p) == EOF);
+    assert(buffer_read(b, p, 16)== LUDIS_EEOF);
+    assert(buffer_reads(b, p) == LUDIS_EEOF);
 
     assert(buffer_writes(b, "hello") == 5);
     assert(buffer_len(b)== 5);
     assert(buffer_read(b, p, 2) == 2); 
     assert(buffer_reads(b, p+2) == 3);
-    assert(buffer_reads(b, p+5) == EOF); /* drained */
+    assert(buffer_reads(b, p+5) == LUDIS_EEOF); /* drained */
 
-    for (i = 0; i < 5; i++)
-        /*printf("%c vs %c\n", b->s[i], p[i]);*/
-        assert(b->s[i] == p[i]);
+    for (i = 0; i < 5; i++) {
+        /* printf("%c vs %c\n", b->s->data[i], p[i]); */
+        assert(b->s->data[i] == p[i]);
+    }
 
     buffer_free(b);
 
@@ -62,7 +64,7 @@ TEST(buf) {
 }
 
 TEST(str) {
-    Str s;
+    Str *s;
     char p[16];
 
     s = str_new(16);

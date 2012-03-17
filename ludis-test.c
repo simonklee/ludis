@@ -12,7 +12,7 @@ static int
 format_test(const char *exp, const char *fmt, ...) {
     va_list ap;
     int ret, i;
-    Str s;
+    Str *s;
 
     va_start(ap, fmt);
     ret = vformat(&s, fmt, ap);
@@ -24,11 +24,10 @@ format_test(const char *exp, const char *fmt, ...) {
     } 
 
     assert(ret == (int)strlen(exp));
-
     for (i = 0; i < (int)strlen(exp); i++) {
-        if (s[i] != exp[i]) {
-            printf("s[%d]: %c != exp[%d]: %c\n", i, s[i], i, exp[i]);
-            assert(s[i] == exp[i]);
+        if (s->data[i] != exp[i]) {
+            printf("s[%d]: %c != exp[%d]: %c\n", i, s->data[i], i, exp[i]);
+            assert(s->data[i] == exp[i]);
         }
     }
 
