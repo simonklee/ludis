@@ -1,7 +1,13 @@
 #ifndef LUDIS_STR_H
 #define LUDIS_STR_H
 
+/* generic string functions used by str library */
+
+char *ludis_find(const char *s, int n, const char *needle, int needlelen);
+char *ludis_findcase(const char *s, int n, const char *needle, int needlelen);
+
 /* Str implements a binary safe dynamic string library */
+
 typedef struct str_header Str;
 
 struct str_header {
@@ -16,8 +22,8 @@ int str_len(Str *s);
 Str *str_append(Str *s, const void *data, size_t n);
 Str *str_appends(Str *s, const char *data);
 Str *str_cat(Str *s, Str *b);
-char *str_strstrn(Str *s, const char *needle, int n);
-char *str_strcasestrn(Str *s, const char *needle, int n);
+char *str_find(Str *s, const char *needle, int n);
+char *str_findcase(Str *s, const char *needle, int n);
 int str_startswith(Str *s, const char *needle, int n);
 int str_startswithcase(Str *s, const char *needle, int n);
 Str *str_grow(Str *s, const int n);

@@ -72,7 +72,7 @@ TEST(strstrn) {
     assert(strncmp(s->data, "foo\0baz", 7) == 0); 
     assert(memcmp(s->data, "foo\0baz", 7) != 0); 
 
-    p = str_strstrn(s, "oo", 2);
+    p = str_find(s, "oo", 2);
     printf("starts at: %c\n", *p);
     assert(p == s->data + 1);
     str_free(s);
@@ -84,20 +84,20 @@ TEST(strcasestrn) {
     s = str_new(6);
     str_appends(s, "abcdef");
 
-    assert(str_strcasestrn(s, "cde", 3) == s->data + 2);
-    assert(str_strcasestrn(s, "abcdef", 6) == s->data);
-    assert(str_strcasestrn(s, "a", 1) == s->data);
-    assert(str_strcasestrn(s, "f", 1) == s->data + 5);
+    assert(str_findcase(s, "cde", 3) == s->data + 2);
+    assert(str_findcase(s, "abcdef", 6) == s->data);
+    assert(str_findcase(s, "a", 1) == s->data);
+    assert(str_findcase(s, "f", 1) == s->data + 5);
 
-    assert(str_strcasestrn(s, "abcdefg", 7) == NULL); 
-    assert(str_strcasestrn(s, "fg", 2) == NULL);
-    assert(str_strcasestrn(s, "", 0) == NULL);
-    assert(str_strcasestrn(s, "aabcde", 6) == NULL);
+    assert(str_findcase(s, "abcdefg", 7) == NULL); 
+    assert(str_findcase(s, "fg", 2) == NULL);
+    assert(str_findcase(s, "", 0) == NULL);
+    assert(str_findcase(s, "aabcde", 6) == NULL);
 
-    assert(str_strcasestrn(s, "Cde", 3) == s->data + 2);
-    assert(str_strcasestrn(s, "aBCdef", 6) == s->data);
-    assert(str_strcasestrn(s, "A", 1) == s->data);
-    assert(str_strcasestrn(s, "F", 1) == s->data + 5);
+    assert(str_findcase(s, "Cde", 3) == s->data + 2);
+    assert(str_findcase(s, "aBCdef", 6) == s->data);
+    assert(str_findcase(s, "A", 1) == s->data);
+    assert(str_findcase(s, "F", 1) == s->data + 5);
 
     str_free(s);
 }

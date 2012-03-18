@@ -12,6 +12,59 @@
 #include "fd.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define ludis_tolower(c) (((c)>='A' && (c) <='Z') ? c|0x20 : c)
+
+/*static char
+ludis_tolower(char c)
+{
+    return (c >= 'A' && c <= 'Z') ? c|0x20 : c;
+}*/
+
+char *
+ludis_find(const char *s, int n, const char *needle, int needlelen)
+{
+    char c1, c2, *haystack = (char *)s;
+    int len = n;
+
+    c2 = *needle++;
+
+    do {
+        do {
+            if (len-- == 0)
+                return NULL;
+
+            c1 = *haystack++;
+
+        } while (c1 != c2);
+
+    } while (memcmp(haystack, needle, needlelen) != 0);
+
+    return --haystack;
+}
+
+char *
+ludis_findcase(const char *s, int n, const char *needle, int needlelen)
+{
+    char *a, *b;
+    int al, bl, i;
+
+    for (i = 0; i + needlelen <= n; i++) {
+        a = (char *) s + i;
+        al = n - i;
+
+        b = (char *) needle;
+        bl = needlelen;
+
+        while (ludis_tolower(*a) == ludis_tolower(*b)) {
+            a++; b++; al--;
+
+            if (--bl == 0) /* end of needle, success */
+                return (char *) s + i;
+        }
+    }
+
+    return NULL;
+}
 
 /* str_new allocates a new Str buf of size n.  
  * Returns a pointer Str */
@@ -99,61 +152,22 @@ str_free(Str *s)
     free(s);
 }
 
-/* str_strstrn finds the first occurance of the substring 
+/* str_find finds the first occurance of the substring 
  * needle in the Str s.
  * returns a pointer to the beginning of substr or NULL */
 char *
-str_strstrn(Str *s, const char *needle, int n) 
+str_find(Str *s, const char *needle, int n) 
 {
-    char c1, c2, *haystack = s->data;
-    int len = s->len;
-
-    c2 = *needle++;
-
-    do {
-        do {
-            if (len-- == 0)
-                return NULL;
-
-            c1 = *haystack++;
-
-        } while (c1 != c2);
-
-    } while (memcmp(haystack, needle, n) != 0);
-
-    return --haystack;
+    return ludis_find(s->data, s->len, needle, n);
 }
 
-#define str_tolower(c) (((c)>='A' && (c) <='Z') ? c|0x20 : c)
-
-/*static char
-str_tolower(char c)
-{
-    return (c >= 'A' && c <= 'Z') ? c|0x20 : c;
-}*/
-
+/* str_findcase finds the first occurance of the substring 
+ * needle in the Str s. Ignores the case of chars.
+ * returns a pointer to the beginning of substr or NULL */
 char *
-str_strcasestrn(Str *s, const char *needle, int n)
+str_findcase(Str *s, const char *needle, int n)
 {
-    char *a, *b;
-    int al, bl, i;
-
-    for (i = 0; i + n <= s->len; i++) {
-        a = s->data + i;
-        al = s->len - i;
-
-        b = (char *) needle;
-        bl = n;
-
-        while (str_tolower(*a) == str_tolower(*b)) {
-            a++; b++; al--;
-
-            if (--bl == 0) /* end of needle, success */
-                return s->data + i;
-        }
-    }
-
-    return NULL;
+    return ludis_findcase(s->data, s->len, needle, n);
 }
 
 /* str_startswith checks if Str s starts with a 
@@ -173,7 +187,7 @@ str_startswith(Str *s, const char *needle, int n)
 }
 
 /* str_startswithcase checks if Str s starts with a 
- * sequence of bytes. Ignores case of chars.
+ * sequence of bytes. Ignores the case of chars.
  * returns 1 on success or 0 */
 int
 str_startswithcase(Str *s, const char *needle, int n)
@@ -182,7 +196,7 @@ str_startswithcase(Str *s, const char *needle, int n)
         return 0;
 
     while (n--)
-        if (str_tolower(s->data[n]) != str_tolower(needle[n]))
+        if (ludis_tolower(s->data[n]) != ludis_tolower(needle[n]))
             return 0;
 
     return 1;

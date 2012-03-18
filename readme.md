@@ -34,6 +34,10 @@ structure
         Implements http methods to retrieve and store the contents
         of an url
 
+        fetch_page(url)
+
+            fetch webpage by url. 
+
     str
         
         Implements a str and a buffer.
