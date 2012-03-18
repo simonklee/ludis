@@ -18,6 +18,8 @@ Str *str_appends(Str *s, const char *data);
 Str *str_cat(Str *s, Str *b);
 char *str_strstrn(Str *s, const char *needle, int n);
 char *str_strcasestrn(Str *s, char *needle, int n);
+int str_startswith(Str *s, char *needle, int n);
+int str_startswithcase(Str *s, char *needle, int n);
 Str *str_grow(Str *s, const int n);
 Str *str_new(size_t n);
 void str_free(Str *s);

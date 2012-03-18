@@ -156,6 +156,38 @@ str_strcasestrn(Str *s, char *needle, int n)
     return NULL;
 }
 
+int
+str_startswith(Str *s, char *needle, int n)
+{
+    if (n > s->len)
+        return 0;
+
+    while (n--)
+        if (s->data[n] != needle[n])
+            return 0;
+
+    return 1;
+}
+
+int
+str_startswithcase(Str *s, char *needle, int n)
+{
+    char c1, c2;
+
+    if (n > s->len)
+        return 0;
+
+    while (n--) {
+        c1 = s->data[n];
+        c2 = needle[n];
+
+        if (str_tolower(c1) != str_tolower(c2))
+            return 0;
+    }
+
+    return 1;
+}
+
 /* str_truncate discards all but the first unread byte in the
  * Str */
 

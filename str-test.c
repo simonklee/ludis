@@ -102,6 +102,34 @@ TEST(strcasestrn) {
     str_free(s);
 }
 
+TEST(startswith) {
+    Str *s;
+
+    s = str_new(6);
+    str_appends(s, "abcdef");
+
+    assert(str_startswith(s, "cde", 3) == 0);
+    assert(str_startswith(s, "abcdef", 6) == 1);
+    assert(str_startswith(s, "def", 3) == 0);
+    assert(str_startswith(s, "a", 1) == 1);
+ 
+    str_free(s);
+}
+
+TEST(startswithcase) {
+    Str *s;
+
+    s = str_new(6);
+    str_appends(s, "ABcDef");
+
+    assert(str_startswithcase(s, "Cde", 3) == 0);
+    assert(str_startswithcase(s, "aBcDeF", 6) == 1);
+    assert(str_startswithcase(s, "DEf", 3) == 0);
+    assert(str_startswithcase(s, "A", 1) == 1);
+ 
+    str_free(s);
+}
+
 TEST(str) {
     Str *s;
     char p[16];
@@ -127,5 +155,7 @@ main(void)
     test_buf();
     test_strstrn();
     test_strcasestrn();
+    test_startswith();
+    test_startswithcase();
     return 0;
 }
