@@ -156,6 +156,9 @@ str_strcasestrn(Str *s, const char *needle, int n)
     return NULL;
 }
 
+/* str_startswith checks if Str s starts with a 
+ * sequence of bytes.
+ * returns 1 on success or 0 */
 int
 str_startswith(Str *s, const char *needle, int n)
 {
@@ -169,21 +172,18 @@ str_startswith(Str *s, const char *needle, int n)
     return 1;
 }
 
+/* str_startswithcase checks if Str s starts with a 
+ * sequence of bytes. Ignores case of chars.
+ * returns 1 on success or 0 */
 int
 str_startswithcase(Str *s, const char *needle, int n)
 {
-    char c1, c2;
-
     if (n > s->len)
         return 0;
 
-    while (n--) {
-        c1 = s->data[n];
-        c2 = needle[n];
-
-        if (str_tolower(c1) != str_tolower(c2))
+    while (n--)
+        if (str_tolower(s->data[n]) != str_tolower(needle[n]))
             return 0;
-    }
 
     return 1;
 }
