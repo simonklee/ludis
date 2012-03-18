@@ -100,7 +100,7 @@ str_free(Str *s)
 }
 
 /* str_strstrn finds the first occurance of the substring 
- * needle in in the Str s.
+ * needle in the Str s.
  * returns a pointer to the beginning of substr or NULL */
 char *
 str_strstrn(Str *s, const char *needle, int n) 
@@ -124,30 +124,36 @@ str_strstrn(Str *s, const char *needle, int n)
     return --haystack;
 }
 
-#define str_tolower(c) (((c >= 'A') && (c <= 'Z')) ? (c | 32) : (c))
+#define str_tolower(c) (((c)>='A' && (c) <='Z') ? c|0x20 : c)
+
+/*static char
+str_tolower(char c)
+{
+    return (c >= 'A' && c <= 'Z') ? c|0x20 : c;
+}*/
 
 char *
-str_strcasestrn(Str *s, const char *needle, int n)
+str_strcasestrn(Str *s, char *needle, int n)
 {
-    char c1, c2, *haystack = s->data;
-    int len = s->len;
+    char *a, *b;
+    int al, bl, i;
 
-    c2 = str_tolower(*needle++);
+    for (i = 0; i + n <= s->len; i++) {
+        a = s->data + i;
+        al = s->len - i;
 
-    do {
-        do {
-            if (len-- == 0)
-                return NULL;
+        b = needle;
+        bl = n;
 
-            c1 = str_tolower(*haystack++);
+        while (str_tolower(*a) == str_tolower(*b)) {
+            a++; b++; al--;
 
-        } while (c1 != c2);
+            if (--bl == 0) /* end of needle, success */
+                return s->data + i;
+        }
+    }
 
-        /* TODO: can't use memcmp */
-
-    } while (memcmp(haystack, needle, n) != 0);
-
-    return --haystack;
+    return NULL;
 }
 
 /* str_truncate discards all but the first unread byte in the

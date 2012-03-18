@@ -60,21 +60,46 @@ TEST(buf) {
     assert(buffer_writes(b, "hello") == 5);
     assert(buffer_next(b, &ptr, 1));
     assert(ptr[0] == 'h');
-    assert(ptr[6] == '\0');
+    /*assert(ptr[6] == '\0');*/
 }
 
 TEST(strstrn) {
     Str *s = str_new(16);
     char *p;
-    
+
     str_append(s, "foo\0bar", 7);
-    /* strncmp is not binary safe, this should fail */
+    /* strncmp is not binary safe. */
     assert(strncmp(s->data, "foo\0baz", 7) == 0); 
     assert(memcmp(s->data, "foo\0baz", 7) != 0); 
 
     p = str_strstrn(s, "oo", 2);
     printf("starts at: %c\n", *p);
     assert(p == s->data + 1);
+    str_free(s);
+}
+
+TEST(strcasestrn) {
+    Str *s;
+
+    s = str_new(6);
+    str_appends(s, "abcdef");
+
+    assert(str_strcasestrn(s, "cde", 3) == s->data + 2);
+    assert(str_strcasestrn(s, "abcdef", 6) == s->data);
+    assert(str_strcasestrn(s, "a", 1) == s->data);
+    assert(str_strcasestrn(s, "f", 1) == s->data + 5);
+
+    assert(str_strcasestrn(s, "abcdefg", 7) == NULL); 
+    assert(str_strcasestrn(s, "fg", 2) == NULL);
+    assert(str_strcasestrn(s, "", 0) == NULL);
+    assert(str_strcasestrn(s, "aabcde", 6) == NULL);
+
+    assert(str_strcasestrn(s, "Cde", 3) == s->data + 2);
+    assert(str_strcasestrn(s, "aBCdef", 6) == s->data);
+    assert(str_strcasestrn(s, "A", 1) == s->data);
+    assert(str_strcasestrn(s, "F", 1) == s->data + 5);
+
+    str_free(s);
 }
 
 TEST(str) {
@@ -101,5 +126,6 @@ main(void)
     test_str();
     test_buf();
     test_strstrn();
+    test_strcasestrn();
     return 0;
 }
