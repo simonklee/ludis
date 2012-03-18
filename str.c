@@ -133,7 +133,7 @@ str_tolower(char c)
 }*/
 
 char *
-str_strcasestrn(Str *s, char *needle, int n)
+str_strcasestrn(Str *s, const char *needle, int n)
 {
     char *a, *b;
     int al, bl, i;
@@ -142,7 +142,7 @@ str_strcasestrn(Str *s, char *needle, int n)
         a = s->data + i;
         al = s->len - i;
 
-        b = needle;
+        b = (char *) needle;
         bl = n;
 
         while (str_tolower(*a) == str_tolower(*b)) {
@@ -157,7 +157,7 @@ str_strcasestrn(Str *s, char *needle, int n)
 }
 
 int
-str_startswith(Str *s, char *needle, int n)
+str_startswith(Str *s, const char *needle, int n)
 {
     if (n > s->len)
         return 0;
@@ -170,7 +170,7 @@ str_startswith(Str *s, char *needle, int n)
 }
 
 int
-str_startswithcase(Str *s, char *needle, int n)
+str_startswithcase(Str *s, const char *needle, int n)
 {
     char c1, c2;
 
