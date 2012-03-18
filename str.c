@@ -99,6 +99,57 @@ str_free(Str *s)
     free(s);
 }
 
+/* str_strstrn finds the first occurance of the substring 
+ * needle in in the Str s.
+ * returns a pointer to the beginning of substr or NULL */
+char *
+str_strstrn(Str *s, const char *needle, int n) 
+{
+    char c1, c2, *haystack = s->data;
+    int len = s->len;
+
+    c2 = *needle++;
+
+    do {
+        do {
+            if (len-- == 0)
+                return NULL;
+
+            c1 = *haystack++;
+
+        } while (c1 != c2);
+
+    } while (memcmp(haystack, needle, n) != 0);
+
+    return --haystack;
+}
+
+#define str_tolower(c) (((c >= 'A') && (c <= 'Z')) ? (c | 32) : (c))
+
+char *
+str_strcasestrn(Str *s, const char *needle, int n)
+{
+    char c1, c2, *haystack = s->data;
+    int len = s->len;
+
+    c2 = str_tolower(*needle++);
+
+    do {
+        do {
+            if (len-- == 0)
+                return NULL;
+
+            c1 = str_tolower(*haystack++);
+
+        } while (c1 != c2);
+
+        /* TODO: can't use memcmp */
+
+    } while (memcmp(haystack, needle, n) != 0);
+
+    return --haystack;
+}
+
 /* str_truncate discards all but the first unread byte in the
  * Str */
 

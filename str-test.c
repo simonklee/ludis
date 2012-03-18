@@ -63,6 +63,20 @@ TEST(buf) {
     assert(ptr[6] == '\0');
 }
 
+TEST(strstrn) {
+    Str *s = str_new(16);
+    char *p;
+    
+    str_append(s, "foo\0bar", 7);
+    /* strncmp is not binary safe, this should fail */
+    assert(strncmp(s->data, "foo\0baz", 7) == 0); 
+    assert(memcmp(s->data, "foo\0baz", 7) != 0); 
+
+    p = str_strstrn(s, "oo", 2);
+    printf("starts at: %c\n", *p);
+    assert(p == s->data + 1);
+}
+
 TEST(str) {
     Str *s;
     char p[16];
@@ -86,5 +100,6 @@ main(void)
 {
     test_str();
     test_buf();
+    test_strstrn();
     return 0;
 }
