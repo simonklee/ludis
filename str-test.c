@@ -64,10 +64,10 @@ TEST(buf) {
 }
 
 TEST(strstrn) {
-    Str *s = str_new(16);
+    Str *s;
     char *p;
 
-    str_append(s, "foo\0bar", 7);
+    s = str_new_str("foo\0bar", 7);
     /* strncmp is not binary safe. */
     assert(strncmp(s->data, "foo\0baz", 7) == 0); 
     assert(memcmp(s->data, "foo\0baz", 7) != 0); 
@@ -81,8 +81,7 @@ TEST(strstrn) {
 TEST(strcasestrn) {
     Str *s;
 
-    s = str_new(6);
-    str_appends(s, "abcdef");
+    s = str_new_str("abcdef", 6);
 
     assert(str_findcase(s, "cde", 3) == s->data + 2);
     assert(str_findcase(s, "abcdef", 6) == s->data);
@@ -105,8 +104,7 @@ TEST(strcasestrn) {
 TEST(startswith) {
     Str *s;
 
-    s = str_new(6);
-    str_appends(s, "abcdef");
+    s = str_new_str("abcdef", 6);
 
     assert(str_startswith(s, "cde", 3) == 0);
     assert(str_startswith(s, "abcdef", 6) == 1);
@@ -119,8 +117,7 @@ TEST(startswith) {
 TEST(startswithcase) {
     Str *s;
 
-    s = str_new(6);
-    str_appends(s, "ABcDef");
+    s = str_new_str("ABcDef", 6);
 
     assert(str_startswithcase(s, "Cde", 3) == 0);
     assert(str_startswithcase(s, "aBcDeF", 6) == 1);
@@ -145,6 +142,11 @@ TEST(str) {
     assert(str_len(s) == (int)strlen(p));
     assert(str_avail(s) == str_cap(s) - (int)strlen(p));
 
+    str_free(s);
+
+    s = str_new_str("hello", 5);
+    assert(str_len(s) == (int)strlen("hello"));
+    assert(str_avail(s) == str_cap(s) - (int)strlen("hello"));
     str_free(s);
 }
 

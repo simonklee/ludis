@@ -40,11 +40,9 @@ http_free(struct http_response *r)
 int 
 http_get(struct http_response *r, const char *url)
 {
-    int rv, n = strlen(url);
+    int rv;
    
-    r->url = str_new(n);
-    r->url = str_append(r->url, url, n);
-
+    r->url = str_new_str(url, strlen(url));
     rv = http_connect(r);
 
     if (rv != LUDIS_OK)

@@ -77,6 +77,17 @@ str_new(size_t n)
     s->len = 0;
     s->cap = n;
     s->data[n] = '\0';
+    memset(s->data, 0, n);
+    return s;
+}
+
+Str *
+str_new_str(const char *data, size_t n)
+{
+    Str *s = str_new(n);
+
+    memcpy(s->data, data, n);
+    s->len = n;
     return s;
 }
 

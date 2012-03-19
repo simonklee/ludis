@@ -28,6 +28,7 @@ int str_startswith(Str *s, const char *needle, int n);
 int str_startswithcase(Str *s, const char *needle, int n);
 Str *str_grow(Str *s, const int n);
 Str *str_new(size_t n);
+Str *str_new_str(const char *data, size_t n);
 void str_free(Str *s);
 
 /* buffer implements a simple variable sized byte buffer
