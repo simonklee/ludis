@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <string.h>
 
 #include "deps/http_parser/http_parser.h"
@@ -10,7 +11,92 @@
 #include "str.h"
 
 static int http_connect(struct http_response *r);
-static Str *url_domainname(Str *url);
+/*Str *url_domainname(Str *url);*/
+/*
+static void
+debug_cb(const char *name, const char *buf, size_t len)
+{
+    Str *s = str_new_str(buf, len);
+    printf("%s: %s\n", name, s->data);
+    str_free(s);
+
+}
+
+int
+request_url_cb(http_parser *p, const char *buf, size_t len)
+{
+    debug_cb("request_url_cb", buf, len);
+    assert(p && buf && len);
+    return 0;
+}
+
+int
+header_field_cb(http_parser *p, const char *buf, size_t len)
+{
+    debug_cb("header_field_cb", buf, len);
+    assert(p && buf && len);
+    return 0;
+}
+
+int
+header_value_cb(http_parser *p, const char *buf, size_t len)
+{
+    debug_cb("header_value_cb", buf, len);
+    assert(p && buf && len);
+    return 0;
+}
+
+int
+count_body_cb(http_parser *p, const char *buf, size_t len)
+{
+    debug_cb("header_value_cb", buf, len);
+    return 0;
+}
+
+int
+message_begin_cb(http_parser *p)
+{
+    printf("message_begin\n");
+    return 0;
+}*/
+
+int
+message_complete_cb(http_parser *p)
+{
+    struct http_response *r = (struct http_response *) p->data;
+    r->flags |= HTTP_COMPLETED;
+    return 0;
+}
+
+int
+body_cb(http_parser *p, const char *buf, size_t len)
+{
+    struct http_response *r = (struct http_response *) p->data;
+
+    if (buffer_write(r->body, buf, len) != (int)len)
+        return LUDIS_ERR;
+
+    return LUDIS_OK;
+}
+
+int
+headers_complete_cb(http_parser *p)
+{
+    struct http_response *r = (struct http_response *) p->data;
+
+    r->body = buffer_new((int)p->content_length);
+    return LUDIS_OK;
+}
+
+http_parser_settings parser_settings = {
+    0,
+    0,
+    0,
+    0,
+    headers_complete_cb,
+    body_cb,
+    message_complete_cb
+};
 
 struct http_response *
 http_init() 
@@ -21,6 +107,10 @@ http_init()
     r->handle = handle_new();
     r->url = NULL;
     r->body = NULL;
+    r->flags = 0;
+    r->parser = malloc(sizeof(struct http_parser));
+    http_parser_init(r->parser, HTTP_RESPONSE);
+    r->parser->data = r;
 
     return r;
 }
@@ -31,7 +121,8 @@ http_free(struct http_response *r)
     handle_free(r->handle);
 
     if (r->url) str_free(r->url);
-    if (r->body) str_free(r->body);
+    if (r->body) buffer_free(r->body);
+    if (r->parser) free(r->parser);
 
     free(r);
     return LUDIS_OK;
@@ -107,14 +198,31 @@ http_fill(struct http_response *r)
         return nread;
     }
 
-    printf("%s\n", r->handle->rb->s->data);
-    http_parse(r);
-    return LUDIS_OK;
+    return http_parse(r);
 }
 
 int 
 http_parse(struct http_response *r)
 {
+    Buffer *b = r->handle->rb;
+    int n, nparse;
+
+    if (r->flags & HTTP_READING) {
+        printf("isreading\n");
+    }
+
+    n = buffer_len(b);
+    nparse = http_parser_execute(r->parser, &parser_settings, b->s->data, n);
+
+    if (r->flags & HTTP_COMPLETED) {
+        printf("iscomplete\n");
+    }
+
+    if (n != nparse) {
+        fprintf(stderr, "expected %d got %d\n", n, nparse);
+        return LUDIS_ERR;
+    }
+
     return LUDIS_OK;
 }
 
@@ -133,7 +241,7 @@ http_connect(struct http_response *r)
     return LUDIS_OK;
 }
 
-static Str *
+/*static Str *
 url_domainname(Str *url)
 {
     Str *domain;
@@ -151,4 +259,4 @@ url_domainname(Str *url)
     n = end - start;
     domain = str_new(n);
     return str_append(domain, start, n);
-}
+}*/

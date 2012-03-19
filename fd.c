@@ -55,7 +55,7 @@ fd_close(int fd)
     return LUDIS_OK;
 }
 
-static int
+/*static int
 fd_nonblock(int fd)
 {
     int flags;
@@ -71,7 +71,7 @@ fd_nonblock(int fd)
     }
 
     return LUDIS_OK;
-}
+}*/
 
 static int
 fd_tcp_nodelay(int fd)

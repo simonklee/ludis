@@ -1,9 +1,9 @@
 BIN=ludis-test fd-test str-test addr-test handle-test cw
-CFLAGS ?= -std=c89 -pedantic -Wl,--relax -Wall -Wextra \
-		  -Wno-variadic-macros -Wno-strict-aliasing -D_POSIX_C_SOURCE=200112L
+CFLAGS ?= -Wl,--relax -Wall -Wextra \
+		  -Wno-variadic-macros -Wno-strict-aliasing 
 DEBUG ?= -g -ggdb
 CC = gcc 
-OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o http.o
+OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o http.o deps/http_parser/http_parser.o 
 
 SRCCOLOR="\033[34m"
 BINCOLOR="\033[39;1m"
