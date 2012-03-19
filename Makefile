@@ -1,9 +1,9 @@
 BIN=ludis-test fd-test str-test addr-test handle-test cw
-CFLAGS ?= -std=c89 -pedantic -pedantic-errors -Wl,--relax -Wall -Wextra \
+CFLAGS ?= -std=c89 -pedantic -Wl,--relax -Wall -Wextra \
 		  -Wno-variadic-macros -Wno-strict-aliasing -D_POSIX_C_SOURCE=200112L
 DEBUG ?= -g -ggdb
 CC = gcc 
-OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o
+OBJ = addr.o ludis.o lmalloc.o str.o fd.o addr.o handle.o http.o
 
 SRCCOLOR="\033[34m"
 BINCOLOR="\033[39;1m"
@@ -18,18 +18,21 @@ all: $(BIN)
 addr.o: addr.c addr.h
 addr-test.o: addr-test.c addr.h common.h test.h
 context.o: context.c context.h
+cw.o: cw.c common.h http.h str.h handle.h addr.h
 fd.o: fd.c addr.h common.h fd.h
 fd-test.o: fd-test.c fd.h addr.h common.h test.h
 handle.o: handle.c fd.h addr.h common.h handle.h str.h lmalloc.h
 handle-test.o: handle-test.c common.h test.h handle.h addr.h str.h
+http.o: http.c deps/http_parser/http_parser.h addr.h common.h lmalloc.h \
+ http.h str.h handle.h
+http-test.o: http-test.c
 lmalloc.o: lmalloc.c
 ludis.o: ludis.c common.h lmalloc.h test.h ludis.h str.h
-ludis-test.o: ludis-test.c common.h ludis.h test.h str.h
+ludis-test.o: ludis-test.c common.h ludis.h str.h test.h
 query.o: query.c
-str.o: str.c common.h lmalloc.h str.h fd.h
-str-test.o: str-test.c test.h str.h
+str.o: str.c common.h lmalloc.h str.h fd.h addr.h
+str-test.o: str-test.c test.h common.h str.h
 test.o: test.c test.h
-cw.o: cw.c handle.h lmalloc.h common.h addr.h
 
 cw: cw.o $(OBJ)
 	$(COLOR_LINK)$(CC) -o $@ $(LDFLAGS) $(DEBUG) $^
